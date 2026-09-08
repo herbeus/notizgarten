@@ -67,7 +67,7 @@ test_precommit_datierte_notiz() {
   assert_rc 1 "$rc"; assert_contains "$out" "datierte Notizen"
   # Auch ein Review mit Datum im Namen, auch in einem erlaubten Unterordner.
   rm "$R/vault-template/Tagebuch/2026-09-08.md"
-  echo x >"$R/vault-template/07-Archiv/Wochenreview/Wochenreview 2026-09-07.md"
+  echo x >"$R/vault-template/Tagebuch/Wochenreview/Wochenreview 2026-09-07.md"
   rc=0; out="$(pcc 2>&1)" || rc=$?
   assert_rc 1 "$rc"; assert_contains "$out" "datierte Notizen"
 }

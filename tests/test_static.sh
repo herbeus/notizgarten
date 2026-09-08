@@ -113,7 +113,7 @@ test_static_prompts_verbieten_loeschen() {
     grep -qi 'loesch' "$ROOT/prompts/$p.md" || t_fail "$p.md sagt nichts zum Loeschen"
   done
   assert_contains "$(cat "$ROOT/prompts/gaertner.md")" "07-Archiv/Gaertner/"
-  assert_contains "$(cat "$ROOT/prompts/wochenreview.md")" "07-Archiv/Wochenreview/"
+  assert_contains "$(cat "$ROOT/prompts/wochenreview.md")" "Tagebuch/Wochenreview/"
 }
 
 test_static_doc_links_loesen_auf() {

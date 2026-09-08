@@ -16,7 +16,7 @@ Lies zuerst `<< VAULT-PFAD >>/CLAUDE.md` und halte dich an die drei Regeln gegen
 
 1. **Das Vault:** was hat sich in den letzten sieben Tagen geaendert? Neue Notizen,
    geaenderte Projekte, Bewegung in `00-Inbox`.
-2. **Das letzte Wochenreview** in `07-Archiv/Wochenreview/` - lies es. Du brauchst es fuer die
+2. **Das letzte Wochenreview** in `Tagebuch/Wochenreview/` - lies es. Du brauchst es fuer die
    Anti-Wiederholungs-Regel. Gibt es keins, ist dies das erste.
 3. **Die Transkripte der Woche:** `<< PFAD ZU DEN TRANSKRIPTEN >>` - woran habe ich gearbeitet?
    Ueberspringe den Unterordner `<< EIGENER PROJEKTORDNER >>`: das sind die Laeufe dieser
@@ -49,7 +49,7 @@ niemand mehr, ab dem dritten schadet es - es begraebt das Neue unter dem Alten.
 ### Aufbau
 
 Nutze die Vorlage `05-Vorlagen/Wochenreview`. Schreib nach
-`07-Archiv/Wochenreview/Wochenreview YYYY-MM-DD.md` - nicht nach `03-Notizen/`, das ist fuer
+`Tagebuch/Wochenreview/Wochenreview YYYY-MM-DD.md` - nicht nach `03-Notizen/`, das ist fuer
 zeitlose Wissensnotizen reserviert.
 
 Die Vorlage enthaelt HTML-Kommentare mit Hinweisen fuer Menschen. **Uebernimm sie nicht.**

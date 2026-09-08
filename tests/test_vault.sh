@@ -14,7 +14,7 @@ EOF
 
 test_vault_report_ordner_der_automatik_existieren() {
   assert_dir "$(VT)/07-Archiv/Gaertner"
-  assert_dir "$(VT)/07-Archiv/Wochenreview"
+  assert_dir "$(VT)/Tagebuch/Wochenreview"
   assert_dir "$(VT)/Tagebuch"
 }
 
@@ -115,7 +115,7 @@ test_vault_claude_md_nennt_alle_ordner() {
   for r in "Schreibe nichts Leeres" "Wiederhole nichts" "Ernte, statt Formulare"; do
     assert_contains "$c" "$r" "Regel fehlt in CLAUDE.md"
   done
-  assert_contains "$c" "07-Archiv/Wochenreview/"
+  assert_contains "$c" "Tagebuch/Wochenreview/"
   assert_contains "$c" "07-Archiv/Gaertner/"
 }
 

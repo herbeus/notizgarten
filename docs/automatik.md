@@ -124,7 +124,7 @@ Timer und Runner-Skripte liegen in [`../automatik/`](../automatik/):
 
 Beide rufen denselben Runner auf, der den Agenten headless mit dem passenden Prompt startet.
 `runner.sh <lauf> --dry-run` zeigt vorher, was genau passieren wuerde: der fertige Prompt,
-die Rechte, der Aufruf. Wochenreviews landen in `07-Archiv/Wochenreview/`, Gaertner-Reports
+die Rechte, der Aufruf. Wochenreviews landen in `Tagebuch/Wochenreview/`, Gaertner-Reports
 in `07-Archiv/Gaertner/`.
 
 ## Der Kalender
