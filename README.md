@@ -29,7 +29,7 @@ Diese drei klingen banal. Sie sind der Unterschied zwischen einem System, das la
 | Pfad | Inhalt |
 |---|---|
 | [`vault-template/`](vault-template/) | Das leere, sofort nutzbare Vault: Ordner, 7 Vorlagen, `CLAUDE.md`, vorkonfiguriertes `.obsidian/` |
-| [`docs/konzept.md`](docs/konzept.md) | PARA + Zettelkasten + MOCs, Trennung privat/beruflich, warum was wohin |
+| [`docs/konzept.md`](docs/konzept.md) | PARA + Zettelkasten + MOCs, Trennung privat/beruflich, warum was wohin, und woher die Ideen stammen |
 | [`docs/setup-macos.md`](docs/setup-macos.md) | Einrichtung auf dem Mac, iCloud-Container |
 | [`docs/setup-windows.md`](docs/setup-windows.md) | Einrichtung auf Windows, Zugriff aus WSL |
 | [`docs/setup-mobil.md`](docs/setup-mobil.md) | iOS und Android, Capture unterwegs |

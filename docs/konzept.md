@@ -90,3 +90,22 @@ an den betreffenden Stellen eine markierte Leerstelle statt einer Kopie.
 - **Kein Demo-Inhalt.** Beispielnotizen aus der Einrichtung bleiben monatelang liegen und
   tauchen in jeder Abfrage als aktives Projekt auf. Genau das ist hier passiert - ein
   Demo-Projekt stand sechs Wochen lang jeden Morgen im Tagesfokus.
+
+## Woher das kommt
+
+Nichts an der Struktur ist hier erfunden. Die Bausteine haben Urheber, und wer eines der
+Konzepte wirklich verstehen will, liest besser das Original als diese Zusammenfassung.
+
+| Baustein | Quelle |
+|---|---|
+| **PARA** (`01` bis `07`) | Tiago Forte, [The PARA Method](https://fortelabs.com/blog/para/) - sortieren nach Handlungsdruck, nicht nach Thema. Fuer die Umsetzung in Obsidian: [How to Implement PARA in Your Favorite Notetaking App](https://fortelabs.com/blog/how-to-implement-para-in-your-favorite-notetaking-app/) |
+| **CODE** (Capture, Organize, Distill, Express) | Ebenfalls Forte, aus dem Buch *Building a Second Brain*. Ohne das Buch am besten erklaert bei [Workflowy: Build a second brain](https://workflowy.com/help/build-a-second-brain/) |
+| **Zettelkasten** (`03-Notizen`) | Sascha Fast und Christian Tietze, [Introduction to the Zettelkasten Method](https://zettelkasten.de/introduction/). Dazu Luhmanns Originalessay von 1981, [Communicating with Slip Boxes](https://luhmann.surge.sh/communicating-with-slip-boxes) - danach versteht man, warum "mindestens ein Link" keine Kosmetik ist |
+| **Eine Idee pro Notiz** | Andy Matuschak, [Evergreen notes should be atomic](https://notes.andymatuschak.org/Evergreen_notes?stackedNotes=z4Rrmh17vMBbauEGnFPTZSK3UmdsGExLRfZz1). Sein Notizsystem ist selbst das Beispiel |
+| **MOCs** (`Home.md`, `MOC - Arbeit`) | Nick Milo, [LYT Blog: Maps](https://blog.linkingyourthinking.com/maps/). Von ihm stammt der Begriff, und die Regel, dass MOCs entstehen, wenn man sie braucht, nicht vorab |
+| **Garten statt Archiv** (der Name, der Gaertner-Lauf) | Maggie Appleton, [A Brief History & Ethos of the Digital Garden](https://maggieappleton.com/garden-history) - wachsen, verfallen, pflegen statt publizieren |
+| **`CLAUDE.md` als Betriebsanleitung** | Claude-Code-Doku, [How Claude remembers your project](https://code.claude.com/docs/en/memory) - warum die Datei im Vault-Root liegt und von selbst geladen wird |
+
+Was **nicht** aus einer dieser Quellen stammt, sind die drei Regeln gegen Leerlauf in der
+`CLAUDE.md`. Die kommen aus dem Scheitern der ersten Fassung, beschrieben in
+[`automatik.md`](automatik.md).
