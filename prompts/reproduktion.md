@@ -30,8 +30,12 @@ Lege im Vault-Ort an:
 
 ```
 00-Inbox/  01-Projekte/  02-Bereiche/  03-Notizen/  04-Ressourcen/
-05-Vorlagen/  06-Anhaenge/  07-Archiv/  08-Arbeit/{Projekte,Wissen}/  Tagebuch/
+05-Vorlagen/  06-Anhaenge/  07-Archiv/Gaertner/  08-Arbeit/{Projekte,Wissen}/
+Tagebuch/Wochenreview/
 ```
+
+`Tagebuch/` bekommt die Tagesnotizen, `Tagebuch/Wochenreview/` die Wochenreviews (beides
+rueckblickend und datiert), `07-Archiv/Gaertner/` die monatlichen Pruefberichte.
 
 In jeden Ordner eine `.info.md` mit ein bis zwei Saetzen, was dort lebt und was nicht.
 Diese Dateien sind fuer mich und fuer dich - du liest sie spaeter, um zu entscheiden,
@@ -85,6 +89,8 @@ Formuliere Regeln nur an einer Stelle aus, sonst laufen die Fassungen auseinande
   Vorlagenordner `05-Vorlagen`, Tagesnotizen nach `Tagebuch`.
 - Nenne mir am Ende die vier Community-Plugins, die ich von Hand installieren muss
   (Dataview, Templater, Calendar, Smart Connections) - die kannst du nicht fuer mich installieren.
+  Sag dazu, dass ich vorher den eingeschraenkten Modus ausschalten muss und Templater seinen
+  Vorlagenordner in den eigenen Einstellungen braucht.
 
 ### Schritt 5: Automatik vorschlagen, nicht einrichten
 
@@ -93,8 +99,9 @@ Erklaere mir drei Laeufe und frage, welche ich will:
 1. **Abend-Destillat, taeglich** - liest die Transkripte meiner Agenten-Sessions des Tages und
    haelt fest, was dauerhaft nuetzlich ist. War nichts, wird nichts geschrieben.
 2. **Wochenreview, sonntags** - Bestandsaufnahme mit der Anti-Wiederholungs-Regel.
+   Schreibt nach `Tagebuch/Wochenreview/`.
 3. **Gaertner, monatlich** - kaputte Links, verwaiste Notizen, veraltete Statusangaben.
-   Meldet nur.
+   Meldet nur, als Bericht in `07-Archiv/Gaertner/`.
 
 Richte einen Timer erst ein, wenn ich zustimme, und sage mir vorher, was er ausfuehren wird.
 

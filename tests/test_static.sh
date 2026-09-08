@@ -159,3 +159,15 @@ test_static_docs_sind_konsistent_mit_dem_runner() {
   assert_contains "$(cat "$ROOT/docs/setup-macos.md")" "--dry-run"
   assert_contains "$(cat "$ROOT/docs/setup-windows.md")" "--dry-run"
 }
+
+test_static_reproduktions_prompt_nennt_alle_template_ordner() {
+  # Wer nach prompts/reproduktion.md aufsetzt, muss dieselbe Struktur bekommen wie vault-template/.
+  p="$(cat "$ROOT/prompts/reproduktion.md")"
+  for d in $(cd "$ROOT/vault-template" && find . -mindepth 1 -type d ! -path './.obsidian*' | sed 's|^\./||' | sort); do
+    case "$d" in 08-Arbeit/*) n="${d#08-Arbeit/}" ;; *) n="$d" ;; esac
+    assert_contains "$p" "$n" "reproduktion.md nennt Ordner nicht: $d"
+  done
+  for v in Tagesnotiz Wochenreview Projektnotiz Permanente-Notiz Literaturnotiz MOC Bereich; do
+    assert_contains "$p" "$v" "reproduktion.md nennt Vorlage nicht: $v"
+  done
+}
