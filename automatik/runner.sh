@@ -87,6 +87,16 @@ fi
 # Wichtig: die Regel heisst Edit(pfad), nicht Write(pfad) - Edit deckt alle schreibenden
 # Datei-Werkzeuge ab, eine Write(pfad)-Regel wird von der Rechtepruefung nicht beachtet.
 ALLOW="Read Glob Grep Edit($VAULT/**) Bash(ls:*) Bash(find:*) Bash(cat:*)"
+
+# Der Arbeitsbereich ist die zweite, unabhaengige Schranke - und die uebersieht man leicht:
+# Der Agent schreibt nur innerhalb seines Arbeitsverzeichnisses und der ausdruecklich
+# freigegebenen Ordner. Eine passende Edit()-Regel allein reicht NICHT. Liegt das Vault
+# ausserhalb (typisch: ein Cloud-Ordner unter /mnt/c oder ~/Library), bricht der Lauf nicht ab -
+# er liest, denkt nach und meldet am Ende "Schreibzugriff nicht freigegeben".
+# Deshalb jeden Ordner, den der Lauf braucht, explizit dazunehmen.
+ADDDIRS=(--add-dir "$VAULT")
+[ -n "${TRANSCRIPTS:-}" ] && [ -d "${TRANSCRIPTS:-}" ] && ADDDIRS+=(--add-dir "$TRANSCRIPTS")
+[ -n "${REPOS:-}" ] && [ -d "${REPOS:-}" ] && ADDDIRS+=(--add-dir "$REPOS")
 # Der Prompt geht ueber stdin, NICHT als Argument. Zwei Gruende:
 #   1. --allowedTools ist variadisch und verschluckt ein nachfolgendes Argument als weitere
 #      Regel. Der Prompt landete dadurch in der Rechtepruefung ("Wildcard tool name **Nichts
@@ -97,11 +107,11 @@ OUT="$(
   if command -v timeout >/dev/null 2>&1; then
     printf '%s' "$BODY" | timeout --kill-after=30s "$TIMEOUT_SECS" \
       "$AGENT" -p --permission-mode acceptEdits --max-turns 40 \
-      --allowedTools "$ALLOW" 2>&1
+      "${ADDDIRS[@]}" --allowedTools "$ALLOW" 2>&1
   else
     # macOS ohne coreutils: kein timeout. Dann eben ohne - der Agent hat --max-turns als Bremse.
     printf '%s' "$BODY" | "$AGENT" -p --permission-mode acceptEdits --max-turns 40 \
-      --allowedTools "$ALLOW" 2>&1
+      "${ADDDIRS[@]}" --allowedTools "$ALLOW" 2>&1
   fi
 )" || RC=$?
 
@@ -113,10 +123,20 @@ if [ "$RC" -ne 0 ]; then
   SUMMARY="FEHLER (rc=$RC): $SUMMARY"
 fi
 
-# macOS-Falle: die Festplattenvollzugriff-Freigabe haengt am Binary-Pfad des Agenten, und der
-# enthaelt die Versionsnummer. Nach einem Update des Agenten zeigt die Freigabe ins Leere - der
-# Lauf bricht dann nicht ab, er findet nur nichts mehr. Genau die stille Sorte Defekt, die man
-# monatelang nicht bemerkt. Deshalb hier explizit danach suchen und laut werden.
+# Zwei stille Fehlschlaege, die beide NICHT als Fehler zurueckkommen: der Lauf endet mit
+# Erfolg, hat aber nichts geschrieben. Ohne diese Pruefungen faellt so etwas monatelang
+# nicht auf - genau die Sorte Defekt, an der das Vorgaengersetup gestorben ist.
+
+# (1) Arbeitsbereich: Vault ausserhalb des Arbeitsverzeichnisses und kein --add-dir.
+case "$OUT" in
+  *"nicht freigegeben"*|*"not granted"*|*"Permission to"*)
+    SUMMARY="ARBEITSBEREICH: Schreiben wurde abgelehnt. Liegt das Vault ausserhalb des Arbeitsverzeichnisses? --add-dir pruefen. $SUMMARY"
+    echo "WARN: Schreibzugriff abgelehnt - Arbeitsbereich pruefen" >>"$LOG"
+    ;;
+esac
+
+# (2) macOS-TCC: die Freigabe haengt am Binary-Pfad des Agenten, und der enthaelt die
+# Versionsnummer. Nach einem Update zeigt sie ins Leere.
 case "$OUT" in
   *"Operation not permitted"*|*"EPERM"*|*"operation not permitted"*)
     SUMMARY="RECHTEFEHLER: Festplattenvollzugriff pruefen. Nach einem Update des Agenten muss die Freigabe fuer den neuen Binary-Pfad erneut erteilt werden. $SUMMARY"

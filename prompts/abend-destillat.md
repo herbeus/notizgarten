@@ -57,6 +57,31 @@ Fuer jede Erkenntnis, die die Probe besteht:
 4. Dateiname: sprechender Titel **ohne `/`** - ein Schraegstrich erzeugt in Obsidian einen
    Unterordner.
 
+### Widerlegte Aussagen korrigieren
+
+Das ist der wertvollste Teil dieses Laufs, und der einzige, der verhindert, dass das Vault
+langsam verrottet. Ergaenzen kann jeder - korrigieren muss jemand wollen.
+
+Pruefe fuer jede Erkenntnis von heute ausdruecklich: **Steht im Vault etwas, das dem
+widerspricht?** Typische Faelle:
+
+- ein Ablauf hat sich geaendert (ein Cron wurde ein Timer, ein Schritt entfaellt)
+- eine Zahl, ein Pfad, ein Name stimmt nicht mehr
+- eine Notiz behauptet etwas als geplant, das laengst erledigt oder verworfen ist
+- zwei Notizen widersprechen sich, und heute wurde klar welche stimmt
+
+Findest du so etwas: **korrigiere die alte Stelle**, statt daneben eine neue Notiz zu legen.
+Zwei widersprechende Notizen sind schlimmer als eine veraltete - bei einer veralteten weiss man
+wenigstens, dass sie alt ist.
+
+Zwei Bedingungen:
+- Korrigiere nur, was du **aus dem heutigen Material belegen** kannst. Bei blossem Verdacht
+  keine Aenderung, sondern eine Zeile in der Ausgabe.
+- Halte fest, **was** du geaendert hast, in der Ausgabe am Ende. Stille Korrekturen an eigenen
+  Notizen sind unheimlich.
+
+Loeschen bleibt trotzdem tabu. Eine falsche Aussage wird richtiggestellt, nicht entfernt.
+
 ### Die Tagesnotiz
 
 Nur anlegen, wenn heute wirklich etwas war. Dann `Tagebuch/YYYY-MM-DD.md` nach der Vorlage
@@ -82,5 +107,5 @@ dieses Setups gescheitert.
 
 ### Am Ende
 
-Eine kurze Ausgabe, hoechstens fuenf Zeilen: was angelegt, was ergaenzt, was aufgefallen ist.
-Bei nichts: die eine Zeile.
+Eine kurze Ausgabe, hoechstens fuenf Zeilen: was angelegt, was ergaenzt, **was korrigiert**,
+was aufgefallen ist. Bei nichts: die eine Zeile.

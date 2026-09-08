@@ -94,6 +94,9 @@ Tags als Inline-Array: `tags: [idee, beruf]`.
   oder loeschen.
 - **Verdichten.** Wichtige Erkenntnisse als permanente Notiz in `03-Notizen/`, in eigenen Worten.
 - **Verknuepfen.** Neue Notizen mit bestehenden MOCs und Notizen verlinken.
+- **Korrigieren.** Widerspricht etwas Neues einer bestehenden Notiz, wird die alte Stelle
+  richtiggestellt - nicht eine zweite Notiz danebengelegt. Nur was belegt ist, und immer
+  sichtbar vermerken.
 
 ## Was ich nie eigenmaechtig tue
 
