@@ -1,6 +1,7 @@
 # Einrichtung auf Windows (und WSL)
 
-Auf Windows gibt es eine Besonderheit: Vault und Automatik leben oft in **zwei Welten**.
+Native Linux steht in [`setup-linux.md`](setup-linux.md). Auf Windows gibt es eine
+Besonderheit: Vault und Automatik leben oft in **zwei Welten**.
 Obsidian laeuft nativ unter Windows, der Agent meist in WSL. Beide meinen dieselben Dateien,
 sprechen sie aber verschieden an.
 

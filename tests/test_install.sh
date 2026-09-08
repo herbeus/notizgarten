@@ -4,6 +4,7 @@
 linux_install() { "$TEST_BASH" "$ROOT/automatik/linux/install.sh"; }
 macos_install() { "$TEST_BASH" "$ROOT/automatik/macos/install.sh"; }
 macos_uninstall() { "$TEST_BASH" "$ROOT/automatik/macos/uninstall.sh"; }
+linux_uninstall() { "$TEST_BASH" "$ROOT/automatik/linux/uninstall.sh"; }
 conf_anlegen() { mkdir -p "$HOME/.config/zettelgarten"; cp "$ZETTELGARTEN_CONF" "$HOME/.config/zettelgarten/config"; }
 
 # ---------- Linux / WSL ----------
@@ -58,6 +59,26 @@ test_install_linux_ungueltige_auswahl_wird_uebersprungen() {
   out="$(echo "9 2" | linux_install)"
   assert_contains "$out" "uebersprungen: 9"
   assert_contains "$(cat "$FAKE_LOG")" "zettelgarten-wochenreview.timer"
+}
+
+test_uninstall_linux_entfernt_alles() {
+  use_fake systemctl; conf_anlegen
+  export FAKE_LOG="$TMP/systemctl.log"
+  echo "1 2 3" | linux_install >/dev/null
+  out="$(linux_uninstall)"
+  U="$HOME/.config/systemd/user"
+  for t in destillat wochenreview gaertner; do
+    assert_no_file "$U/zettelgarten-$t.timer"; assert_no_file "$U/zettelgarten-$t.service"
+    assert_contains "$(cat "$FAKE_LOG")" "disable --now zettelgarten-$t.timer"
+  done
+  assert_contains "$(cat "$FAKE_LOG")" "daemon-reload"
+  assert_contains "$out" "fertig"
+}
+
+test_uninstall_linux_ohne_installation_ist_kein_fehler() {
+  use_fake systemctl
+  rc=0; linux_uninstall >/dev/null || rc=$?
+  assert_rc 0 "$rc"
 }
 
 # ---------- macOS ----------

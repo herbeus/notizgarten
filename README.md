@@ -31,6 +31,7 @@ Diese drei klingen banal. Sie sind der Unterschied zwischen einem System, das la
 | [`vault-template/`](vault-template/) | Das leere, sofort nutzbare Vault: Ordner, 7 Vorlagen, `CLAUDE.md`, vorkonfiguriertes `.obsidian/` |
 | [`docs/konzept.md`](docs/konzept.md) | PARA + Zettelkasten + MOCs, Trennung privat/beruflich, warum was wohin |
 | [`docs/setup-macos.md`](docs/setup-macos.md) | Einrichtung auf dem Mac, iCloud-Container |
+| [`docs/setup-linux.md`](docs/setup-linux.md) | Einrichtung auf Linux, systemd-User-Timer, Linger |
 | [`docs/setup-windows.md`](docs/setup-windows.md) | Einrichtung auf Windows, Zugriff aus WSL |
 | [`docs/setup-mobil.md`](docs/setup-mobil.md) | iOS und Android, Capture unterwegs |
 | [`docs/agent-betrieb.md`](docs/agent-betrieb.md) | Wie die `CLAUDE.md` den Agenten steuert |

@@ -119,10 +119,12 @@ menschliche Entscheidung.
 
 Timer und Runner-Skripte liegen in [`../automatik/`](../automatik/):
 
-- **Linux und WSL:** systemd-user-Timer, siehe [`automatik/linux/`](../automatik/linux/)
+- **Linux:** systemd-user-Timer, siehe [`setup-linux.md`](setup-linux.md) und
+  [`automatik/linux/`](../automatik/linux/)
+- **WSL:** dieselben Timer, Eigenheiten in [`setup-windows.md`](setup-windows.md)
 - **macOS:** launchd, siehe [`automatik/macos/`](../automatik/macos/)
 
-Beide rufen denselben Runner auf, der den Agenten headless mit dem passenden Prompt startet.
+Alle rufen denselben Runner auf, der den Agenten headless mit dem passenden Prompt startet.
 `runner.sh <lauf> --dry-run` zeigt vorher, was genau passieren wuerde: der fertige Prompt,
 die Rechte, der Aufruf. Wochenreviews landen in `Tagebuch/Wochenreview/`, Gaertner-Reports
 in `07-Archiv/Gaertner/`.

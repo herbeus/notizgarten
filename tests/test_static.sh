@@ -1,6 +1,6 @@
 # Statische Pruefungen: Skripte, Units, plists, Prompts, Docs, Config.
 
-SCRIPTS="automatik/runner.sh automatik/notify.sh automatik/linux/install.sh automatik/macos/install.sh automatik/macos/uninstall.sh tools/pre-commit-check.sh tests/run.sh"
+SCRIPTS="automatik/runner.sh automatik/notify.sh automatik/linux/install.sh automatik/linux/uninstall.sh automatik/macos/install.sh automatik/macos/uninstall.sh tools/pre-commit-check.sh tests/run.sh"
 
 test_static_bash_syntax() {
   for s in $SCRIPTS tests/fakes/claude; do
@@ -158,6 +158,7 @@ test_static_docs_sind_konsistent_mit_dem_runner() {
   assert_not_contains "$r" "--allowedTools"
   assert_contains "$(cat "$ROOT/docs/setup-macos.md")" "--dry-run"
   assert_contains "$(cat "$ROOT/docs/setup-windows.md")" "--dry-run"
+  assert_contains "$(cat "$ROOT/docs/setup-linux.md")" "--dry-run"
 }
 
 test_static_reproduktions_prompt_nennt_alle_template_ordner() {
