@@ -114,10 +114,18 @@ SETTINGS_JSON="{\"permissions\":{
 }}"
 AGENT_ARGS=(-p --permission-mode default --max-turns 40 --settings "$SETTINGS_JSON")
 
+# Zeitlimit: Homebrew installiert die GNU-coreutils mit g-Praefix, also gtimeout statt
+# timeout. TIMEOUT_BIN aus der Config gewinnt (Name oder absoluter Pfad); leer = beide suchen.
+if [ -z "$TIMEOUT_BIN" ]; then
+  for c in timeout gtimeout; do
+    command -v "$c" >/dev/null 2>&1 && { TIMEOUT_BIN="$c"; break; }
+  done
+fi
+
 if [ "$DRY" = 1 ]; then
   echo "== Aufruf: (cd \"$VAULT\" && $AGENT ${AGENT_ARGS[*]})"
-  if [ -n "$TIMEOUT_BIN" ] || command -v timeout >/dev/null 2>&1 || command -v gtimeout >/dev/null 2>&1; then
-    echo "== Zeitlimit: $TIMEOUT_SECS s"
+  if [ -n "$TIMEOUT_BIN" ]; then
+    echo "== Zeitlimit: $TIMEOUT_SECS s ($TIMEOUT_BIN)"
   else
     echo "== Zeitlimit: keins (weder timeout noch gtimeout gefunden - coreutils installieren)"
   fi
@@ -160,13 +168,6 @@ fi
 # Der Prompt geht ueber stdin, NICHT als Argument. Zwei Gruende:
 #   1. Ein nachfolgendes Argument wird von variadischen Flags als weiterer Wert geschluckt.
 #   2. Ein Prompt in argv laeuft irgendwann gegen ARG_MAX. Ueber stdin nie.
-# Homebrew installiert die GNU-coreutils mit g-Praefix: gtimeout, nicht timeout.
-# TIMEOUT_BIN aus der Config gewinnt; leer = beide Namen probieren.
-if [ -z "$TIMEOUT_BIN" ]; then
-  for c in timeout gtimeout; do
-    command -v "$c" >/dev/null 2>&1 && { TIMEOUT_BIN="$c"; break; }
-  done
-fi
 cd "$VAULT" || exit 1
 RC=0
 OUT="$(

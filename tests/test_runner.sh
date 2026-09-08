@@ -315,27 +315,35 @@ test_timeout_bricht_haengenden_agenten_ab() {
 }
 
 test_timeout_konfiguriertes_kommando_wird_benutzt() {
-  # Homebrew nennt das GNU-Kommando gtimeout. TIMEOUT_BIN erzwingt ein bestimmtes Kommando;
-  # die Autoerkennung von gtimeout beweist die macOS-CI mit installierten coreutils.
-  cat >"$TMP/bin/gtimeout" <<'EOF'
+  # Homebrew nennt das GNU-Kommando gtimeout. TIMEOUT_BIN erzwingt ein bestimmtes Kommando,
+  # hier als absoluter Pfad: der Runner stellt /opt/homebrew/bin vor den PATH, ein
+  # gleichnamiger Fake im PATH wuerde auf einem Mac mit coreutils verlieren.
+  cat >"$TMP/bin/fake-timeout" <<'EOF'
 #!/usr/bin/env bash
-echo "gtimeout $1 $2" >>"$FAKE_RECORD.gtimeout"
+echo "fake-timeout $1 $2" >>"$FAKE_RECORD.timeout"
 shift 2; exec "$@"
 EOF
-  chmod +x "$TMP/bin/gtimeout"
-  write_conf 'TIMEOUT_SECS=7' 'TIMEOUT_BIN=gtimeout'
+  chmod +x "$TMP/bin/fake-timeout"
+  write_conf 'TIMEOUT_SECS=7' "TIMEOUT_BIN=\"$TMP/bin/fake-timeout\""
+  out="$(runner destillat --dry-run)"
+  assert_contains "$out" "== Zeitlimit: 7 s ($TMP/bin/fake-timeout)"
   rc=0; runner destillat >/dev/null 2>&1 || rc=$?
   assert_rc 0 "$rc"
-  assert_file "$FAKE_RECORD.gtimeout" "konfiguriertes Kommando wurde nicht benutzt"
-  assert_contains "$(cat "$FAKE_RECORD.gtimeout")" "gtimeout --kill-after=30s 7"
+  assert_file "$FAKE_RECORD.timeout" "konfiguriertes Kommando wurde nicht benutzt"
+  assert_contains "$(cat "$FAKE_RECORD.timeout")" "fake-timeout --kill-after=30s 7"
   assert_file "$FAKE_RECORD/argv" "Agent wurde nicht durchgereicht"
 }
 
-test_timeout_autoerkennung_findet_gtimeout_ohne_timeout() {
-  command -v timeout >/dev/null 2>&1 && t_skip "timeout vorhanden - Autoerkennung von gtimeout nur ohne timeout pruefbar (macOS mit Homebrew)"
-  command -v gtimeout >/dev/null 2>&1 || t_skip "kein gtimeout"
+test_timeout_autoerkennung_kennt_beide_namen() {
+  # Deterministisch nicht auf jedem System pruefbar (auf einem Mac mit coreutils liegt ein
+  # echtes timeout vor dem Test-PATH). Deshalb: die Suchliste selbst muss beide Namen tragen,
+  # und der Dry-Run muss das gefundene Kommando nennen.
+  grep -q 'for c in timeout gtimeout; do' "$ROOT/automatik/runner.sh" || t_fail "Suchliste ohne gtimeout"
   out="$(runner destillat --dry-run)"
-  assert_contains "$out" "== Zeitlimit: 900 s"
+  case "$out" in
+    *"== Zeitlimit: 900 s (timeout)"*|*"== Zeitlimit: 900 s (gtimeout)"*|*"== Zeitlimit: keins"*) ;;
+    *) t_fail "Zeitlimit-Zeile fehlt oder nennt kein Kommando:"$'\n'"$out" ;;
+  esac
 }
 
 test_dryrun_zeigt_zeitlimit() {
