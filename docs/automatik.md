@@ -27,10 +27,10 @@ Ersteinrichtung, das seit Wochen ins Archiv gehoert haette. Es stand jeden Morge
 inklusive Hinweis auf die ueberfaellige Deadline.
 
 **Die eine Ausnahme ist der Beweis, was gefehlt hat.** An genau einem Tag standen 16 echte
-Kalendertermine in der Notiz, von der Ueberweisung um 07:15 bis zum Kellergang um 19:55.
-Dieser Tag war konkret und nuetzlich. An 31 anderen Tagen "keine Termine" - und dass jemand
-31 Tage am Stueck keinen einzigen Termin hat, ist unplausibel. Der Kalenderzugriff hat also
-fast nie geliefert, und ohne ihn blieb dem Task nichts uebrig, als das Template hinzulegen.
+Kalendertermine in der Notiz, ueber den ganzen Tag verteilt. Dieser Tag war konkret und
+nuetzlich. An 31 anderen Tagen "keine Termine" - und dass jemand 31 Tage am Stueck keinen
+einzigen Termin hat, ist unplausibel. Der Kalenderzugriff hat also fast nie geliefert, und
+ohne ihn blieb dem Task nichts uebrig, als das Template hinzulegen.
 
 **Die vier Wochenreviews waren inhaltlich gut** - sie haben scharf diagnostiziert, mitgezaehlt
 und Muster erkannt. Eines schrieb ueber das eigene System:
