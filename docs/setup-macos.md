@@ -111,23 +111,7 @@ Der Runner ergaenzt den Pfad selbst; wer eigene Skripte baut, muss daran denken.
 einmal - nicht fuer jeden ausgefallenen Tag. Bei einem Rechner, der abends zugeklappt wird,
 lohnt eine fruehere Startzeit.
 
-## 5. Pruefen
-
-```bash
-launchctl list | grep megabrain
-tail -20 ~/.local/state/mega-brain/run.log
-```
-
-Nach zwei Wochen einmal nachsehen, ob tatsaechlich etwas entsteht. Laeuft die Automatik zwar,
-produziert aber nichts Brauchbares, ist das ein Befund - siehe [`automatik.md`](automatik.md).
-
-## Entfernen
-
-```bash
-~/mega-brain/automatik/macos/uninstall.sh
-```
-
-## Erster Testlauf, ohne Risiko fuers echte Vault
+## 5. Erster Testlauf, ohne Risiko fuers echte Vault
 
 Der Trick: **Quelle echt lassen, Ziel faelschen.** Das Testvault liegt im Home, das echte in
 iCloud bleibt unangetastet. Am Mac, in einem Terminal-Fenster (nicht ueber SSH - siehe oben):
@@ -167,3 +151,19 @@ Das zeigt genau, was der Lauf mit dem Original getan haette - bevor er es tut.
 
 Vorher in Obsidian die **Dateiwiederherstellung** einschalten und die Aufbewahrung hochsetzen.
 Das ist das Netz fuer den Tag, an dem es doch ans echte Vault geht.
+
+## 6. Pruefen
+
+```bash
+launchctl list | grep megabrain
+tail -20 ~/.local/state/mega-brain/run.log
+```
+
+Nach zwei Wochen einmal nachsehen, ob tatsaechlich etwas entsteht. Laeuft die Automatik zwar,
+produziert aber nichts Brauchbares, ist das ein Befund - siehe [`automatik.md`](automatik.md).
+
+## Entfernen
+
+```bash
+~/mega-brain/automatik/macos/uninstall.sh
+```
