@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Fake-Agent fuer die Tests. Zeichnet auf, womit er aufgerufen wurde, und tut, was die
+# Umgebung sagt. Er denkt nicht, er protokolliert.
+#
+#   FAKE_RECORD=<dir>   argv, stdin, cwd dorthin schreiben
+#   FAKE_OUT=<text>     Ausgabe (Standard: "nichts zu destillieren"; leer = leere Ausgabe)
+#   FAKE_RC=<n>         Exit-Code (Standard 0)
+#   FAKE_SLEEP=<sek>    vor der Ausgabe warten (Lock- und Timeout-Tests)
+#   FAKE_WRITE=<pfad>   diese Datei anlegen (relativ zum cwd, wie ein echter Lauf)
+set -u
+if [ -n "${FAKE_RECORD:-}" ]; then
+  mkdir -p "$FAKE_RECORD"
+  printf '%s\n' "$@" >"$FAKE_RECORD/argv"
+  cat >"$FAKE_RECORD/stdin"
+  pwd -P >"$FAKE_RECORD/cwd"
+fi
+[ -n "${FAKE_SLEEP:-}" ] && sleep "$FAKE_SLEEP"
+if [ -n "${FAKE_WRITE:-}" ]; then
+  mkdir -p "$(dirname "$FAKE_WRITE")"
+  echo "vom Fake-Agenten geschrieben" >"$FAKE_WRITE"
+fi
+printf '%s\n' "${FAKE_OUT-fake agent: nichts zu destillieren}"
+exit "${FAKE_RC:-0}"

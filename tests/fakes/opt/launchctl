@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Fake fuer launchctl: protokolliert Aufrufe nach $FAKE_LOG, tut sonst nichts.
+printf '%s\n' "launchctl $*" >>"${FAKE_LOG:-/dev/null}"
+exit 0

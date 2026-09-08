@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Fake fuer systemctl: protokolliert nach $FAKE_LOG. FAKE_SYSTEMD_DOWN=1 laesst
+# "show-environment" scheitern, wie ohne laufenden User-Manager.
+printf '%s\n' "systemctl $*" >>"${FAKE_LOG:-/dev/null}"
+case "$*" in
+  *show-environment*) [ "${FAKE_SYSTEMD_DOWN:-0}" = 1 ] && exit 1 ;;
+esac
+exit 0

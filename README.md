@@ -40,6 +40,7 @@ Diese drei klingen banal. Sie sind der Unterschied zwischen einem System, das la
 | [`prompts/`](prompts/) | Reproduktions-Prompt und die drei Automatik-Prompts |
 | [`automatik/`](automatik/) | systemd-user-Timer (Linux) und launchd (macOS) |
 | [`tools/`](tools/) | Pruefskript, das echte Notizen aus dem Repo haelt |
+| [`tests/`](tests/) | Testsuite: Runner, Rechte, Lock, Hook, Installer, Template. `tests/run.sh` |
 
 ## Schnellstart
 
@@ -69,6 +70,18 @@ Dieses Repo enthaelt ausschliesslich das **leere Template**. Ein gefuelltes Vaul
 Gesundheit, Finanzen, Namen von Angehoerigen und berufliche Interna - das hat auf einer
 Plattform nichts verloren, auch nicht in einem privaten Repo.
 [`tools/pre-commit-check.sh`](tools/pre-commit-check.sh) prueft das vor jedem Commit.
+
+## Tests
+
+```bash
+tests/run.sh            # alles
+tests/run.sh lock       # nur Tests mit "lock" im Namen
+```
+
+Ohne Abhaengigkeiten ausser bash und git. Der Agent ist ein Fake, der aufzeichnet, womit er
+aufgerufen wurde - geprueft wird also der Vertrag zwischen Runner und Agent (Arbeitsverzeichnis,
+Rechte, Prompt ueber stdin), nicht der Agent selbst. Die CI laeuft auf Linux, auf macOS unter
+`/bin/bash` 3.2 und unter Git Bash auf Windows.
 
 ## Lizenz
 

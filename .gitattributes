@@ -1,0 +1,2 @@
+# Skripte und Vorlagen brauchen LF, auch auf Windows (Git Bash, Hooks, plists).
+* text=auto eol=lf

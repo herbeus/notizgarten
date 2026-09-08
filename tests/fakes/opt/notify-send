@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Fake fuer notify-send: schreibt jedes Argument in eine eigene Zeile nach $FAKE_LOG.
+printf '%s\n' "$@" >>"${FAKE_LOG:-/dev/null}"
+exit 0

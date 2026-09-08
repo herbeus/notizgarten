@@ -1,0 +1,42 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux (bash 5)
+            os: ubuntu-latest
+            bash: bash
+          - name: macos (/bin/bash 3.2)
+            os: macos-latest
+            bash: /bin/bash
+          - name: windows (git bash)
+            os: windows-latest
+            bash: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: shellcheck installieren
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y shellcheck
+
+      - name: Umgebung
+        shell: bash
+        run: |
+          uname -a
+          ${{ matrix.bash }} -c 'echo "bash $BASH_VERSION"'
+          git --version
+
+      - name: Tests
+        shell: bash
+        env:
+          TEST_BASH: ${{ matrix.bash }}
+        run: ${{ matrix.bash }} tests/run.sh
