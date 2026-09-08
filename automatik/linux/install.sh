@@ -19,8 +19,15 @@ systemctl --user show-environment >/dev/null 2>&1 || {
   exit 1
 }
 
+RUNNER="$(cd "$HERE/.." && pwd)/runner.sh"
+[ -x "$RUNNER" ] || { echo "FEHLER: $RUNNER fehlt oder ist nicht ausfuehrbar"; exit 1; }
+
 mkdir -p "$UNITS"
-cp -f "$HERE"/zettelgarten-*.service "$HERE"/zettelgarten-*.timer "$UNITS/"
+# __RUNNER__ durch den echten Pfad dieses Klons ersetzen - wo das Repo liegt, ist egal.
+for u in "$HERE"/zettelgarten-*.service; do
+  sed "s|__RUNNER__|$RUNNER|g" "$u" > "$UNITS/$(basename "$u")"
+done
+cp -f "$HERE"/zettelgarten-*.timer "$UNITS/"
 systemctl --user daemon-reload
 
 echo "Welche Laeufe sollen aktiv sein? (mehrfach moeglich, Leerzeichen getrennt)"
@@ -40,4 +47,5 @@ done
 
 echo
 echo "Pruefen:  systemctl --user list-timers 'zettelgarten-*'"
-echo "Testlauf: ~/zettelgarten/automatik/runner.sh destillat"
+echo "Testlauf: $RUNNER destillat --dry-run   (zeigt Prompt und Rechte, startet nichts)"
+echo "          $RUNNER destillat"

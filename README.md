@@ -44,9 +44,11 @@ Diese drei klingen banal. Sie sind der Unterschied zwischen einem System, das la
 ## Schnellstart
 
 ```bash
-git clone <dieses-repo> zettelgarten
-cp -r zettelgarten/vault-template ~/MeinVault
+git clone <dieses-repo> ~/zettelgarten
+cp -r ~/zettelgarten/vault-template ~/MeinVault
 ```
+
+Der Ort des Klons ist frei - die Install-Skripte tragen den echten Pfad in Timer und plists ein.
 
 Dann Obsidian oeffnen, *Open folder as vault*, `~/MeinVault` waehlen. Details je nach
 Betriebssystem in `docs/setup-*.md`.

@@ -1,6 +1,6 @@
 ---
 typ: tagesnotiz
-datum: {{date:YYYY-MM-DD}}
+erstellt: {{date:YYYY-MM-DD}}
 tags: [tagebuch]
 ---
 # {{date:dddd, DD.MM.YYYY}}

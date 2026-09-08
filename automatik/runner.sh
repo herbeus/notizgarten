@@ -1,14 +1,20 @@
 #!/usr/bin/env bash
-# runner.sh <destillat|wochenreview|gaertner> - startet einen Automatik-Lauf headless.
+# runner.sh <destillat|wochenreview|gaertner> [--dry-run] - startet einen Automatik-Lauf headless.
 #
 # Wird von systemd (Linux/WSL) oder launchd (macOS) aufgerufen, laeuft aber auch von Hand.
 # Bewusst portabel gehalten: macOS bringt bash 3.2 mit, kein flock, und BSD-stat statt GNU-stat.
+#
+# --dry-run zeigt den zusammengesetzten Prompt, die Rechte und die Argumentliste, ohne den
+# Agenten zu starten. Erster Schritt bei jeder Einrichtung.
 set -uo pipefail
 
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TASK="${1:-}"
+DRY=0
+[ "${2:-}" = "--dry-run" ] && DRY=1
 case "$TASK" in
   destillat|wochenreview|gaertner) ;;
-  *) echo "usage: runner.sh <destillat|wochenreview|gaertner>" >&2; exit 2 ;;
+  *) echo "usage: runner.sh <destillat|wochenreview|gaertner> [--dry-run]" >&2; exit 2 ;;
 esac
 
 # ---------- Konfiguration ----------
@@ -18,11 +24,14 @@ CONF="${ZETTELGARTEN_CONF:-$HOME/.config/zettelgarten/config}"
 [ -f "$CONF" ] && . "$CONF"
 
 : "${VAULT:=}"                                   # Pflicht: Pfad zum Vault
-: "${PROMPT_DIR:=$HOME/zettelgarten/prompts}"      # wo die Prompt-Dateien liegen
+: "${PROMPT_DIR:=$HERE/../prompts}"
 : "${AGENT:=claude}"                             # CLI des Agenten
 : "${LOG:=$HOME/.local/state/zettelgarten/run.log}"
 : "${TIMEOUT_SECS:=900}"
 : "${NOTIFY:=1}"                                 # 0 = keine Benachrichtigung
+: "${TRANSCRIPTS:=}"
+: "${REPOS:=}"
+: "${GIT_AUTHOR:=}"
 
 if [ -z "$VAULT" ]; then
   echo "FEHLER: VAULT ist nicht gesetzt. Lege $CONF an - Vorlage: config.example" >&2
@@ -30,6 +39,12 @@ if [ -z "$VAULT" ]; then
 fi
 if [ ! -d "$VAULT" ]; then
   echo "FEHLER: Vault-Pfad existiert nicht: $VAULT" >&2
+  exit 1
+fi
+# Das Destillat hat genau eine Quelle. Ohne sie laeuft es ins Leere und meldet
+# "nichts zu destillieren" - der stille Fehlschlag, den wir nicht wollen.
+if [ "$TASK" = "destillat" ] && [ ! -d "$TRANSCRIPTS" ]; then
+  echo "FEHLER: TRANSCRIPTS fehlt oder existiert nicht: '$TRANSCRIPTS'. Fuer das Destillat ist das Pflicht." >&2
   exit 1
 fi
 
@@ -50,14 +65,79 @@ PROMPT_FILE="$PROMPT_DIR/$PROMPT_NAME"
 
 mkdir -p "$(dirname "$LOG")"
 
-# ---------- Nur ein Lauf gleichzeitig ----------
-# mkdir ist atomar und gibt es ueberall - flock fehlt auf macOS.
-LOCK="${TMPDIR:-/tmp}/zettelgarten-$TASK.lock"
-if ! mkdir "$LOCK" 2>/dev/null; then
-  echo "$(date '+%F %T') [$TASK] laeuft bereits, Abbruch" >>"$LOG"
+# ---------- Prompt vorbereiten ----------
+# Der Kopf der Datei ist Doku fuer Menschen; an den Agenten geht alles ab der Zeile "## Prompt".
+BODY="$(awk '/^## Prompt$/{flag=1;next} flag' "$PROMPT_FILE")"
+[ -n "$BODY" ] || BODY="$(cat "$PROMPT_FILE")"
+
+# Die Transkripte der Automatik-Laeufe selbst liegen im selben Transkript-Ordner, in einem
+# Projektordner, der aus dem Arbeitsverzeichnis (= Vault) abgeleitet ist: jedes Zeichen ausser
+# [a-zA-Z0-9] wird zu "-". Der Agent bekommt diesen Namen, damit er seine eigenen Vorlaeufe
+# nicht als "woran ich gearbeitet habe" auswertet.
+OWN_PROJECT="$(printf '%s' "$VAULT" | sed 's/[^a-zA-Z0-9]/-/g')"
+
+# Platzhalter fuellen. Optionales, das nicht konfiguriert ist, wird als solches benannt -
+# ein leerer String liesse den Agenten raten.
+BODY="${BODY//<< VAULT-PFAD >>/$VAULT}"
+BODY="${BODY//<< PFAD ZU DEN TRANSKRIPTEN >>/${TRANSCRIPTS:-(nicht konfiguriert)}}"
+BODY="${BODY//<< EIGENER PROJEKTORDNER >>/$OWN_PROJECT}"
+BODY="${BODY//<< PFAD ZU MEINEN REPOS >>/${REPOS:-(nicht konfiguriert)}}"
+BODY="${BODY//<< MEINE MAILADRESSE >>/${GIT_AUTHOR:-(nicht konfiguriert)}}"
+
+UNFILLED="$(printf '%s' "$BODY" | grep -o '<<[^>]*>>' | sort -u || true)"
+
+# ---------- Rechte ----------
+# Zwei Schranken, beide ueber eine Settings-Datei statt ueber --allowedTools:
+#   1. --allowedTools ist "comma or space-separated". Ein Vault-Pfad mit Leerzeichen
+#      ("Mobile Documents") wird dort zerlegt und die Regel ist kaputt.
+#   2. Pfadregeln brauchen "//" fuer absolute Pfade. "Edit(/Users/...)" ist RELATIV zum
+#      Arbeitsverzeichnis und trifft nie.
+# Der Lauf startet im Vault (cd unten), damit CLAUDE.md automatisch geladen wird und das
+# Arbeitsverzeichnis exakt das Vault ist. Modus "default": was keine Regel erlaubt, wird
+# headless verweigert - es gibt niemanden, der einen Dialog beantworten koennte. Das ist die
+# Schranke: Transkripte und Repos sind lesbar (additionalDirectories), aber nicht beschreibbar.
+# Der Gaertner darf nur seinen Report-Ordner schreiben.
+case "$TASK" in
+  gaertner) EDIT_SCOPE="$VAULT/07-Archiv/Gaertner" ;;
+  *)        EDIT_SCOPE="$VAULT" ;;
+esac
+json_str() { local s="${1//\\/\\\\}"; s="${s//\"/\\\"}"; printf '"%s"' "$s"; }
+EXTRA_DIRS=""
+for d in "$TRANSCRIPTS" "$REPOS"; do
+  [ -n "$d" ] && [ -d "$d" ] && EXTRA_DIRS="$EXTRA_DIRS${EXTRA_DIRS:+,}$(json_str "$d")"
+done
+SETTINGS_JSON="{\"permissions\":{
+  \"allow\":[\"Read\",\"Glob\",\"Grep\",\"Bash(ls:*)\",\"Bash(find:*)\",\"Bash(git log:*)\",\"Bash(git diff:*)\",$(json_str "Edit(/$EDIT_SCOPE/**)")],
+  \"deny\":[\"Bash(rm:*)\",\"Bash(mv:*)\",\"WebFetch\",\"WebSearch\"],
+  \"additionalDirectories\":[$EXTRA_DIRS]
+}}"
+AGENT_ARGS=(-p --permission-mode default --max-turns 40 --settings "$SETTINGS_JSON")
+
+if [ "$DRY" = 1 ]; then
+  echo "== Aufruf: (cd \"$VAULT\" && $AGENT ${AGENT_ARGS[*]})"
+  echo "== Rechte:"; printf '%s\n' "$SETTINGS_JSON"
+  [ -n "$UNFILLED" ] && { echo "== WARN, ungefuellte Platzhalter:"; printf '%s\n' "$UNFILLED"; }
+  echo "== Prompt:"; printf '%s\n' "$BODY"
   exit 0
 fi
-trap 'rmdir "$LOCK" 2>/dev/null' EXIT INT TERM
+
+# ---------- Nur ein Lauf gleichzeitig ----------
+# mkdir ist atomar und gibt es ueberall - flock fehlt auf macOS. Die PID im Lock erlaubt,
+# ein verwaistes Lock (Reboot, OOM-Kill mitten im Lauf) zu erkennen; sonst blockiert es
+# stumm jeden weiteren Lauf, und niemand merkt es.
+LOCK="${TMPDIR:-/tmp}/zettelgarten-$TASK.lock"
+if ! mkdir "$LOCK" 2>/dev/null; then
+  OLDPID="$(cat "$LOCK/pid" 2>/dev/null || true)"
+  if [ -n "$OLDPID" ] && kill -0 "$OLDPID" 2>/dev/null; then
+    echo "$(date '+%F %T') [$TASK] laeuft bereits (pid $OLDPID), Abbruch" >>"$LOG"
+    exit 0
+  fi
+  echo "$(date '+%F %T') [$TASK] verwaistes Lock entfernt (pid ${OLDPID:-?})" >>"$LOG"
+  rm -rf "$LOCK"
+  mkdir "$LOCK" 2>/dev/null || { echo "$(date '+%F %T') [$TASK] Lock nicht zu bekommen" >>"$LOG"; exit 1; }
+fi
+echo $$ >"$LOCK/pid"
+trap 'rm -rf "$LOCK" 2>/dev/null' EXIT INT TERM
 
 # ---------- Log-Rotation (portabel: kein stat) ----------
 if [ -f "$LOG" ] && [ "$(wc -c <"$LOG" | tr -d ' ')" -gt 1048576 ]; then
@@ -65,53 +145,23 @@ if [ -f "$LOG" ] && [ "$(wc -c <"$LOG" | tr -d ' ')" -gt 1048576 ]; then
 fi
 
 echo "===== $(date '+%F %T') [$TASK] =====" >>"$LOG"
-
-# ---------- Prompt vorbereiten ----------
-# Der Kopf der Datei ist Doku fuer Menschen; an den Agenten geht alles ab der Zeile "## Prompt".
-BODY="$(awk '/^## Prompt$/{flag=1;next} flag' "$PROMPT_FILE")"
-[ -n "$BODY" ] || BODY="$(cat "$PROMPT_FILE")"
-
-# Platzhalter fuellen, soweit konfiguriert.
-BODY="${BODY//<< VAULT-PFAD >>/$VAULT}"
-BODY="${BODY//<< PFAD ZU DEN TRANSKRIPTEN >>/${TRANSCRIPTS:-}}"
-BODY="${BODY//<< PFAD ZU MEINEN REPOS >>/${REPOS:-}}"
-BODY="${BODY//<< MEINE MAILADRESSE >>/${GIT_AUTHOR:-}}"
-
-if printf '%s' "$BODY" | grep -q '<<'; then
+if [ -n "$UNFILLED" ]; then
   echo "WARN: ungefuellte Platzhalter im Prompt:" >>"$LOG"
-  printf '%s' "$BODY" | grep -o '<<[^>]*>>' | sort -u | sed 's/^/  /' >>"$LOG"
+  printf '%s\n' "$UNFILLED" | sed 's/^/  /' >>"$LOG"
 fi
 
 # ---------- Lauf ----------
-# Schreibrechte bewusst auf das Vault beschraenkt.
-# Wichtig: die Regel heisst Edit(pfad), nicht Write(pfad) - Edit deckt alle schreibenden
-# Datei-Werkzeuge ab, eine Write(pfad)-Regel wird von der Rechtepruefung nicht beachtet.
-ALLOW="Read Glob Grep Edit($VAULT/**) Bash(ls:*) Bash(find:*) Bash(cat:*)"
-
-# Der Arbeitsbereich ist die zweite, unabhaengige Schranke - und die uebersieht man leicht:
-# Der Agent schreibt nur innerhalb seines Arbeitsverzeichnisses und der ausdruecklich
-# freigegebenen Ordner. Eine passende Edit()-Regel allein reicht NICHT. Liegt das Vault
-# ausserhalb (typisch: ein Cloud-Ordner unter /mnt/c oder ~/Library), bricht der Lauf nicht ab -
-# er liest, denkt nach und meldet am Ende "Schreibzugriff nicht freigegeben".
-# Deshalb jeden Ordner, den der Lauf braucht, explizit dazunehmen.
-ADDDIRS=(--add-dir "$VAULT")
-[ -n "${TRANSCRIPTS:-}" ] && [ -d "${TRANSCRIPTS:-}" ] && ADDDIRS+=(--add-dir "$TRANSCRIPTS")
-[ -n "${REPOS:-}" ] && [ -d "${REPOS:-}" ] && ADDDIRS+=(--add-dir "$REPOS")
 # Der Prompt geht ueber stdin, NICHT als Argument. Zwei Gruende:
-#   1. --allowedTools ist variadisch und verschluckt ein nachfolgendes Argument als weitere
-#      Regel. Der Prompt landete dadurch in der Rechtepruefung ("Wildcard tool name **Nichts
-#      is not supported") und fehlte gleichzeitig als Eingabe.
+#   1. Ein nachfolgendes Argument wird von variadischen Flags als weiterer Wert geschluckt.
 #   2. Ein Prompt in argv laeuft irgendwann gegen ARG_MAX. Ueber stdin nie.
+cd "$VAULT" || exit 1
 RC=0
 OUT="$(
   if command -v timeout >/dev/null 2>&1; then
-    printf '%s' "$BODY" | timeout --kill-after=30s "$TIMEOUT_SECS" \
-      "$AGENT" -p --permission-mode acceptEdits --max-turns 40 \
-      "${ADDDIRS[@]}" --allowedTools "$ALLOW" 2>&1
+    printf '%s' "$BODY" | timeout --kill-after=30s "$TIMEOUT_SECS" "$AGENT" "${AGENT_ARGS[@]}" 2>&1
   else
     # macOS ohne coreutils: kein timeout. Dann eben ohne - der Agent hat --max-turns als Bremse.
-    printf '%s' "$BODY" | "$AGENT" -p --permission-mode acceptEdits --max-turns 40 \
-      "${ADDDIRS[@]}" --allowedTools "$ALLOW" 2>&1
+    printf '%s' "$BODY" | "$AGENT" "${AGENT_ARGS[@]}" 2>&1
   fi
 )" || RC=$?
 
@@ -127,11 +177,11 @@ fi
 # Erfolg, hat aber nichts geschrieben. Ohne diese Pruefungen faellt so etwas monatelang
 # nicht auf - genau die Sorte Defekt, an der das Vorgaengersetup gestorben ist.
 
-# (1) Arbeitsbereich: Vault ausserhalb des Arbeitsverzeichnisses und kein --add-dir.
+# (1) Rechte: eine Schreibregel greift nicht (falscher Pfad, Vault ausserhalb des Scopes).
 case "$OUT" in
-  *"nicht freigegeben"*|*"not granted"*|*"Permission to"*)
-    SUMMARY="ARBEITSBEREICH: Schreiben wurde abgelehnt. Liegt das Vault ausserhalb des Arbeitsverzeichnisses? --add-dir pruefen. $SUMMARY"
-    echo "WARN: Schreibzugriff abgelehnt - Arbeitsbereich pruefen" >>"$LOG"
+  *"nicht freigegeben"*|*"not granted"*|*"requires approval"*|*"permission denied"*|*"Permission denied"*)
+    SUMMARY="RECHTE: Schreiben wurde abgelehnt. 'runner.sh $TASK --dry-run' zeigt die Regeln. $SUMMARY"
+    echo "WARN: Schreibzugriff abgelehnt - Regeln mit --dry-run pruefen" >>"$LOG"
     ;;
 esac
 
@@ -147,7 +197,7 @@ echo "$(date '+%F %T') [$TASK] fertig (rc=$RC)" >>"$LOG"
 
 # ---------- Benachrichtigung ----------
 if [ "$NOTIFY" = "1" ]; then
-  "$(dirname "$0")/notify.sh" "Zettelgarten: $TASK" "$SUMMARY" 2>/dev/null || true
+  "$HERE/notify.sh" "Zettelgarten: $TASK" "$SUMMARY" 2>/dev/null || true
 fi
 
 echo "[$TASK] $SUMMARY"

@@ -39,13 +39,16 @@ TABLE status, deadline FROM "01-Projekte" WHERE status = "aktiv" SORT deadline A
 - [ ] Erledigtes nach `07-Archiv` (`status: erledigt`)
 
 ## Bereiche
-<< Hier die eigenen Bereichsnotizen verlinken, sobald sie existieren.
-   Bewusst leer ausgeliefert - ein Template, das auf Notizen zeigt, die es nicht gibt,
-   erzeugt nur tote Links. >>
+<!--
+  Hier die eigenen Bereichsnotizen aus 02-Bereiche verlinken, sobald sie existieren.
+  Bewusst leer ausgeliefert - ein Template, das auf Notizen zeigt, die es nicht gibt,
+  erzeugt nur tote Links. Gibt es noch keine: Abschnitt weglassen.
+-->
 - [ ] 
 
 ## Ziele
-- [ ] << Zielnotiz verlinken >> - auf Kurs?
+<!-- Zielnotiz verlinken, sobald es eine gibt. Sonst Abschnitt weglassen. -->
+- [ ] 
 
 ## Reflexion
 - **Was lief gut?**

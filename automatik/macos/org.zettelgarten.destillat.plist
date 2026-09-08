@@ -7,7 +7,7 @@
 
   <key>ProgramArguments</key>
   <array>
-    <string>__HOME__/zettelgarten/automatik/runner.sh</string>
+    <string>__RUNNER__</string>
     <string>destillat</string>
   </array>
 
@@ -24,9 +24,15 @@
     <key>Minute</key><integer>0</integer>
   </dict>
 
-  <!-- Verpasste Laeufe nachholen, wenn der Mac zur Startzeit geschlafen hat. -->
+  <!-- Nicht beim Laden starten. Einen Lauf, den der Mac im Schlaf verpasst hat, holt launchd
+       fuer StartCalendarInterval von selbst nach dem Aufwachen nach (einmal, nicht pro Tag). -->
   <key>RunAtLoad</key>
   <false/>
+
+  <!-- Arbeitsverzeichnis: ohne diesen Key startet launchd in "/". Der Runner wechselt
+       selbst ins Vault; das hier ist nur die zweite Sicherung. -->
+  <key>WorkingDirectory</key>
+  <string>__HOME__</string>
 
   <key>StandardOutPath</key>
   <string>__HOME__/.local/state/zettelgarten/launchd.out</string>

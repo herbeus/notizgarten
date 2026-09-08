@@ -17,9 +17,11 @@ Rolle. `zettelgarten` ist nur das Werkzeug, mit dem du es aufsetzt.
    - Anhaenge in `06-Anhaenge`
    - Vorlagenordner `05-Vorlagen`
    - Tagesnotizen in `Tagebuch` mit der Vorlage `Tagesnotiz`
-4. **Community-Plugins** installieren (Einstellungen -> Community plugins). Bei fuenf ist Schluss:
+4. **Community-Plugins** installieren (Einstellungen -> Community plugins). Ein neues Vault
+   startet im eingeschraenkten Modus - den zuerst ausschalten. Bei fuenf ist Schluss:
    - **Dataview** - die Listen in `Home.md` und den Bereichsnotizen brauchen es
-   - **Templater** - maechtigere Vorlagen
+   - **Templater** - maechtigere Vorlagen; den Ordner `05-Vorlagen` in seinen eigenen
+     Einstellungen noch einmal eintragen
    - **Calendar** - Tagesnotizen per Klick
    - **Smart Connections** - semantische Suche lokal, ohne API-Key
 5. `Home.md` oeffnen und die `<< ... >>`-Leerstellen fuellen.

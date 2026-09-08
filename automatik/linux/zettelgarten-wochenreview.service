@@ -3,4 +3,4 @@ Description=Zettelgarten: wochenreview
 
 [Service]
 Type=oneshot
-ExecStart=%h/zettelgarten/automatik/runner.sh wochenreview
+ExecStart=__RUNNER__ wochenreview

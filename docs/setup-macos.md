@@ -29,8 +29,12 @@ cp -r ~/zettelgarten/vault-template ~/Library/Mobile\ Documents/iCloud~md~obsidi
 3. Die mitgelieferte `.obsidian/`-Konfiguration ist bereits gesetzt: neue Notizen nach
    `00-Inbox`, Anhaenge nach `06-Anhaenge`, Vorlagen aus `05-Vorlagen`, Tagesnotizen nach
    `Tagebuch`
-4. Community-Plugins von Hand installieren (Einstellungen -> Community plugins):
-   **Dataview**, **Templater**, **Calendar**, **Smart Connections**
+4. Community-Plugins von Hand installieren (Einstellungen -> Community plugins). Ein frisches
+   Vault startet im **eingeschraenkten Modus** - den zuerst ausschalten, sonst gibt es keinen
+   Browse-Knopf. Dann **Dataview**, **Templater**, **Calendar**, **Smart Connections**.
+   Die mitgelieferte `community-plugins.json` schaltet sie nach der Installation ein.
+5. Templater hat einen **eigenen** Vorlagenordner in seinen Einstellungen; dort ebenfalls
+   `05-Vorlagen` eintragen. Die mitgelieferte Konfiguration deckt nur das Core-Plugin ab.
 
 Ohne Dataview bleiben die Abfragen in `Home.md` als Codeblock stehen - das ist der haeufigste
 "das funktioniert nicht"-Moment.
@@ -49,11 +53,14 @@ $EDITOR ~/.config/zettelgarten/config      # VAULT-Pfad eintragen
 ~/zettelgarten/automatik/macos/install.sh
 ```
 
-Erst von Hand testen, bevor ein Timer laeuft:
+Erst ansehen, dann von Hand testen, bevor ein Timer laeuft:
 
 ```bash
+~/zettelgarten/automatik/runner.sh destillat --dry-run   # Prompt, Rechte, Aufruf - startet nichts
 ~/zettelgarten/automatik/runner.sh destillat
 ```
+
+Der Klon muss nicht in `~/zettelgarten` liegen; `install.sh` traegt den echten Pfad ein.
 
 ### Drei macOS-Eigenheiten
 

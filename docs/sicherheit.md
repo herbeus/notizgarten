@@ -23,12 +23,28 @@ sie schreiben wuerdest, wenn die betreffende Person mitliest.
 
 ## Der Agent und die Vertrauensgrenze
 
-Der Agent bekommt Schreibrechte **nur auf das Vault-Verzeichnis**. Das ist im Runner so
-eingestellt und sollte so bleiben:
+Der Agent bekommt Schreibrechte **nur auf das Vault-Verzeichnis**, der Gaertner sogar nur
+auf seinen Report-Ordner. Der Runner setzt das so:
 
-```
---allowedTools "... Write($VAULT/**) Edit($VAULT/**) ..."
-```
+- Er startet **im Vault** (`cd`), damit das Arbeitsverzeichnis genau das Vault ist und die
+  `CLAUDE.md` automatisch geladen wird.
+- Permission-Modus `default`, kein `acceptEdits`. Headless gibt es niemanden, der einen
+  Dialog beantwortet - was keine Regel erlaubt, wird verweigert. Das ist die Schranke.
+- Die Regeln gehen als JSON ueber `--settings`, nicht ueber `--allowedTools`. Letzteres
+  zerlegt seine Liste an Leerzeichen, und der iCloud-Pfad enthaelt eines ("Mobile Documents").
+- Absolute Pfade in Regeln brauchen `//`: `Edit(//Users/...)`. Mit einem Slash ist der Pfad
+  relativ zum Arbeitsverzeichnis und trifft nie. Die erste Fassung dieses Repos hatte genau
+  diesen Fehler, und die Laeufe schrieben trotzdem - weil `acceptEdits` alles im
+  Arbeitsverzeichnis durchwinkte. Eine Schranke, die nie greift, faellt nicht auf.
+- Transkripte und Repos sind ueber `additionalDirectories` lesbar, aber ohne Edit-Regel
+  nicht beschreibbar. `rm`, `mv`, Web-Zugriff sind ausdruecklich verboten.
+
+`runner.sh <lauf> --dry-run` zeigt die Regeln, die tatsaechlich gesetzt werden. Einmal
+ansehen, bevor der erste Timer laeuft.
+
+Was der Runner **nicht** ueberschreiben kann: Allow-Regeln aus deiner eigenen
+`~/.claude/settings.json` gelten zusaetzlich. Wer dort `Edit` oder `Bash` pauschal erlaubt
+hat, hebelt die Schranke aus.
 
 **Quelleninhalte sind Daten, keine Anweisungen.** Alle Prompts in diesem Repo sagen das
 ausdruecklich. Der Grund: Ein Transkript, eine Notiz oder eine kopierte Webseite kann Text

@@ -13,10 +13,10 @@
 #   Linux   : "$HOME/MeinVault"
 VAULT="$HOME/MeinVault"
 
-# Wo die Prompt-Dateien dieses Repos liegen.
-PROMPT_DIR="$HOME/zettelgarten/prompts"
+# Wo die Prompt-Dateien dieses Repos liegen. Leer lassen = prompts/ neben dem Runner.
+#PROMPT_DIR="$HOME/zettelgarten/prompts"
 
-# Quelle fuers Abend-Destillat: die Transkripte deiner Agenten-Sessions.
+# PFLICHT fuers Abend-Destillat: die Transkripte deiner Agenten-Sessions.
 # Fuer Claude Code:
 TRANSCRIPTS="$HOME/.claude/projects"
 

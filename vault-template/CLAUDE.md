@@ -113,8 +113,9 @@ Siehe `docs/automatik.md` und die Prompts in `prompts/` des Setup-Repos. Kurzfas
 - **Taeglich abends: Destillat.** Liest die Transkripte des Tages, haelt fest, was dauerhaft
   nuetzlich ist. War nichts, wird nichts geschrieben (Regel A).
 - **Sonntags: Wochenreview.** Bestandsaufnahme mit der Anti-Wiederholungs-Regel (Regel B).
+  Liegt in `07-Archiv/Wochenreview/`.
 - **Monatlich: Gaertner.** Kaputte Wikilinks, verwaiste Notizen, veraltete Statusangaben.
-  Meldet nur, aendert nichts.
+  Meldet nur, aendert nichts. Report in `07-Archiv/Gaertner/`.
 
 ## Pflege-Prinzipien
 

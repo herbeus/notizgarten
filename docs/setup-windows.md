@@ -36,7 +36,9 @@ Obsidian **fuer Windows** installieren, nicht in WSL - eine Linux-GUI in WSL bri
 Aerger mit Dateirechten und Schriftdarstellung. Dann *Open folder as vault* und den Ordner
 unter `C:\` waehlen.
 
-Community-Plugins wie ueblich: **Dataview**, **Templater**, **Calendar**, **Smart Connections**.
+Community-Plugins wie ueblich: erst den eingeschraenkten Modus ausschalten, dann **Dataview**,
+**Templater**, **Calendar**, **Smart Connections**. Templater braucht `05-Vorlagen` zusaetzlich
+in seinen eigenen Einstellungen.
 
 ## 3. Automatik in WSL
 
@@ -49,9 +51,12 @@ $EDITOR ~/.config/zettelgarten/config
 In der Konfiguration den `/mnt/c/...`-Pfad eintragen, nicht den Windows-Pfad mit Backslashes.
 
 ```bash
-~/zettelgarten/automatik/runner.sh destillat      # erst von Hand testen
-~/zettelgarten/automatik/linux/install.sh         # dann Timer einrichten
+~/zettelgarten/automatik/runner.sh destillat --dry-run   # Prompt und Rechte ansehen
+~/zettelgarten/automatik/runner.sh destillat             # von Hand testen
+~/zettelgarten/automatik/linux/install.sh                # dann Timer einrichten
 ```
+
+Der Klon darf auch woanders liegen; `install.sh` traegt den echten Pfad in die Units ein.
 
 ### WSL-Eigenheiten
 

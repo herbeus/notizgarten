@@ -12,31 +12,40 @@
 # Exit 0 = sauber, 1 = Fund.
 set -uo pipefail
 
-ROOT="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+# Repo-Wurzel: Argument, sonst git, sonst relativ zu dieser Datei.
+# Nicht ueber BASH_SOURCE allein: als Symlink in .git/hooks/ zeigt der auf .git/hooks/,
+# und "eine Ebene hoeher" waere dann .git/ - das Skript prueft dann stumm nichts.
+if [ -n "${1:-}" ]; then
+  ROOT="$1"
+elif ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" && [ -n "$ROOT" ]; then
+  :
+else
+  ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+fi
 VT="$ROOT/vault-template"
+[ -d "$VT" ] || { printf '%s\n' "ABBRUCH: $VT nicht gefunden - falsche Wurzel? ($ROOT)"; exit 1; }
 RC=0
 say() { printf '%s\n' "$*"; }
 
 # ---------- 1) Echte Notizen im Template ----------
 # Erlaubt ist nur, was zur Vorlage gehoert. Alles andere ist vermutlich echter Inhalt.
 ALLOW='^(README\.md|CLAUDE\.md|Home\.md|05-Vorlagen/[^/]+\.md|08-Arbeit/MOC - Arbeit\.md|(.*/)?\.info\.md|\.obsidian/.*|\.gitkeep)$'
-if [ -d "$VT" ]; then
-  STRAY="$( (cd "$VT" && find . -type f ! -path '*/.git/*' | sed 's|^\./||') \
-            | grep -Ev "$ALLOW" || true )"
-  if [ -n "$STRAY" ]; then
-    say "ABBRUCH: unerwartete Dateien in vault-template/ - sieht nach echtem Vault-Inhalt aus:"
-    printf '%s\n' "$STRAY" | sed 's/^/  /'
-    say "  Erlaubt sind nur Vorlagen, .info.md, CLAUDE.md, README.md, Home.md, MOC - Arbeit.md und .obsidian/."
-    RC=1
-  fi
+STRAY="$( (cd "$VT" && find . -type f ! -path '*/.git/*' | sed 's|^\./||') \
+          | grep -Ev "$ALLOW" || true )"
+if [ -n "$STRAY" ]; then
+  say "ABBRUCH: unerwartete Dateien in vault-template/ - sieht nach echtem Vault-Inhalt aus:"
+  printf '%s\n' "$STRAY" | sed 's/^/  /'
+  say "  Erlaubt sind nur Vorlagen, .info.md, CLAUDE.md, README.md, Home.md, MOC - Arbeit.md und .obsidian/."
+  RC=1
+fi
 
-  # Tagesnotizen und Reviews haben ein Datumsmuster - die duerfen nie mitkommen.
-  DATED="$(find "$VT" -type f -regextype posix-extended -regex '.*[0-9]{4}-[0-9]{2}-[0-9]{2}.*\.md' 2>/dev/null || true)"
-  if [ -n "$DATED" ]; then
-    say "ABBRUCH: datierte Notizen im Template (Tagesnotiz oder Review?):"
-    printf '%s\n' "$DATED" | sed 's/^/  /'
-    RC=1
-  fi
+# Tagesnotizen und Reviews haben ein Datumsmuster im Namen - die duerfen nie mitkommen.
+# Bewusst find | grep statt find -regex: BSD-find (macOS) kennt -regextype nicht.
+DATED="$(find "$VT" -type f -name '*.md' | grep -E '[0-9]{4}-[0-9]{2}-[0-9]{2}[^/]*\.md$' || true)"
+if [ -n "$DATED" ]; then
+  say "ABBRUCH: datierte Notizen im Template (Tagesnotiz oder Review?):"
+  printf '%s\n' "$DATED" | sed 's/^/  /'
+  RC=1
 fi
 
 # ---------- 2) Zugangsdaten ----------
@@ -72,5 +81,5 @@ if [ -d "$ROOT/.git" ]; then
   fi
 fi
 
-[ "$RC" -eq 0 ] && say "pre-commit-check: sauber"
+[ "$RC" -eq 0 ] && say "pre-commit-check: sauber ($ROOT)"
 exit "$RC"

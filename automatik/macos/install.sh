@@ -14,6 +14,9 @@ AGENTS="$HOME/Library/LaunchAgents"
   exit 1
 }
 
+RUNNER="$(cd "$HERE/.." && pwd)/runner.sh"
+[ -x "$RUNNER" ] || { echo "FEHLER: $RUNNER fehlt oder ist nicht ausfuehrbar"; exit 1; }
+
 mkdir -p "$AGENTS" "$HOME/.local/state/zettelgarten"
 
 echo "Welche Laeufe sollen aktiv sein? (mehrfach moeglich, Leerzeichen getrennt)"
@@ -29,8 +32,9 @@ for n in $sel; do
     *) echo "uebersprungen: $n"; continue ;;
   esac
   label="org.zettelgarten.$t"
-  # __HOME__ ersetzen: plists kennen keine Variablenexpansion.
-  sed "s|__HOME__|$HOME|g" "$HERE/$label.plist" > "$AGENTS/$label.plist"
+  # __HOME__ und __RUNNER__ ersetzen: plists kennen keine Variablenexpansion, und wo das
+  # Repo liegt, soll egal sein.
+  sed -e "s|__HOME__|$HOME|g" -e "s|__RUNNER__|$RUNNER|g" "$HERE/$label.plist" > "$AGENTS/$label.plist"
   launchctl bootout "gui/$UID/$label" 2>/dev/null || true
   launchctl bootstrap "gui/$UID" "$AGENTS/$label.plist"
   echo "aktiv: $label"
@@ -44,7 +48,8 @@ Zwei Dinge, die macOS eigen sind:
    Liegt das Vault in iCloud, braucht das ausfuehrende Programm die Berechtigung
    "Festplattenvollzugriff" (Systemeinstellungen -> Datenschutz & Sicherheit).
    Ohne sie schlaegt der Lauf mit "Operation not permitted" fehl, ohne jede Nachfrage.
-   Fuege dort dein Terminal-Programm hinzu und starte es neu.
+   Unter launchd zaehlt das Programm selbst: /bin/bash UND das Binary des Agenten.
+   Details und die Versionspfad-Falle: docs/setup-macos.md.
 
 2. SCHLAFENDER MAC
    launchd holt einen verpassten Lauf nach dem Aufwachen nach, aber nur einmal -
@@ -52,5 +57,6 @@ Zwei Dinge, die macOS eigen sind:
    eine Startzeit am fruehen Abend statt spaet.
 
 Pruefen:  launchctl list | grep zettelgarten
-Testlauf: ~/zettelgarten/automatik/runner.sh destillat
+Testlauf: <repo>/automatik/runner.sh destillat --dry-run   (zeigt Prompt und Rechte)
+          <repo>/automatik/runner.sh destillat             (im Terminal am Mac, nicht per SSH)
 HINT
