@@ -55,12 +55,38 @@ Erst von Hand testen, bevor ein Timer laeuft:
 ~/mega-brain/automatik/runner.sh destillat
 ```
 
-### Zwei macOS-Eigenheiten
+### Drei macOS-Eigenheiten
 
-**Festplattenvollzugriff.** Liegt das Vault in iCloud, braucht das ausfuehrende Programm die
-Berechtigung *Festplattenvollzugriff* (Systemeinstellungen -> Datenschutz & Sicherheit).
-Fehlt sie, scheitert der Lauf mit `Operation not permitted` - **ohne Nachfrage und ohne
-Dialog**. Fuege dort Dein Terminal-Programm hinzu und starte es neu.
+**Festplattenvollzugriff (TCC).** Liegt das Vault in iCloud, braucht das ausfuehrende Programm
+die Berechtigung *Festplattenvollzugriff* (Systemeinstellungen -> Datenschutz & Sicherheit).
+Fehlt sie, scheitert der Zugriff mit `Operation not permitted` - **ohne Nachfrage und ohne
+Dialog**, also auch ohne Hinweis darauf, was eigentlich fehlt.
+
+Geprueft auf macOS 26.5, und die Grenze verlaeuft genau hier:
+
+| Pfad | ohne Zusatzrechte |
+|---|---|
+| `~` und `~/.claude` | lesbar |
+| `~/Documents`, `~/Desktop` | verweigert |
+| `~/Library/Mobile Documents` (iCloud) | verweigert |
+
+Testen laesst sich das in einem Befehl, aus dem Programm heraus, das spaeter den Lauf startet:
+
+```bash
+ls ~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/MeinVault
+```
+
+**Ueber SSH gibt es diese Rechte gar nicht.** Eine Anmeldung per `ssh` bekommt keine
+TCC-Freigaben, unabhaengig davon, was im Terminal am Geraet erlaubt ist. Das ist beim Testen
+sogar nuetzlich: Legst Du das Testvault ins Home (`~/vault-test`), kann ein Lauf ueber SSH das
+echte Vault in iCloud **technisch nicht erreichen**. Sicherer als jede Absprache.
+
+**Kein Homebrew, kein `timeout`.** Auf einem frischen macOS fehlen die GNU-Coreutils. Der Runner
+faengt das ab und laeuft dann ohne Zeitlimit, gebremst nur durch `--max-turns`. Wer ein hartes
+Limit will, installiert `coreutils` - der Runner nutzt `timeout`, sobald es da ist.
+
+Ebenso liegt der Agent oft in `~/.local/bin` und ist im **nicht-interaktiven** PATH unsichtbar.
+Der Runner ergaenzt den Pfad selbst; wer eigene Skripte baut, muss daran denken.
 
 **Schlafender Mac.** launchd holt einen verpassten Lauf nach dem Aufwachen nach, aber nur
 einmal - nicht fuer jeden ausgefallenen Tag. Bei einem Rechner, der abends zugeklappt wird,

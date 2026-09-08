@@ -37,11 +37,15 @@ fi
 export PATH="$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
 command -v "$AGENT" >/dev/null 2>&1 || { echo "FEHLER: '$AGENT' nicht im PATH" >&2; exit 1; }
 
-PROMPT_FILE="$PROMPT_DIR/$(case "$TASK" in
-  destillat) echo abend-destillat.md ;;
-  wochenreview) echo wochenreview.md ;;
-  gaertner) echo gaertner.md ;;
-esac)"
+# Achtung: das case bewusst NICHT in eine $()-Ersetzung schachteln - bash 3.2 (macOS)
+# kann ein mehrzeiliges case innerhalb von $( ) nicht parsen, bash 5 dagegen schon.
+# Der Fehler faellt damit erst auf dem Mac auf.
+case "$TASK" in
+  destillat)    PROMPT_NAME=abend-destillat.md ;;
+  wochenreview) PROMPT_NAME=wochenreview.md ;;
+  gaertner)     PROMPT_NAME=gaertner.md ;;
+esac
+PROMPT_FILE="$PROMPT_DIR/$PROMPT_NAME"
 [ -f "$PROMPT_FILE" ] || { echo "FEHLER: Prompt fehlt: $PROMPT_FILE" >&2; exit 1; }
 
 mkdir -p "$(dirname "$LOG")"
@@ -79,18 +83,21 @@ if printf '%s' "$BODY" | grep -q '<<'; then
 fi
 
 # ---------- Lauf ----------
-# Schreibrechte bewusst auf das Vault beschraenkt. Der Agent soll nichts ausserhalb anfassen.
+# Schreibrechte bewusst auf das Vault beschraenkt.
+# Wichtig: die Regel heisst Edit(pfad), nicht Write(pfad) - Edit deckt alle schreibenden
+# Datei-Werkzeuge ab, eine Write(pfad)-Regel wird von der Rechtepruefung nicht beachtet.
+ALLOW="Read Glob Grep Edit($VAULT/**) Bash(ls:*) Bash(find:*) Bash(cat:*)"
 RC=0
 OUT="$(
   if command -v timeout >/dev/null 2>&1; then
     timeout --kill-after=30s "$TIMEOUT_SECS" \
       "$AGENT" -p --permission-mode acceptEdits --max-turns 40 \
-      --allowedTools "Read Glob Grep Write($VAULT/**) Edit($VAULT/**) Bash(ls:*) Bash(find:*) Bash(cat:*)" \
+      --allowedTools "$ALLOW" \
       "$BODY" 2>&1
   else
     # macOS ohne coreutils: kein timeout. Dann eben ohne - der Agent hat --max-turns als Bremse.
     "$AGENT" -p --permission-mode acceptEdits --max-turns 40 \
-      --allowedTools "Read Glob Grep Write($VAULT/**) Edit($VAULT/**) Bash(ls:*) Bash(find:*) Bash(cat:*)" \
+      --allowedTools "$ALLOW" \
       "$BODY" 2>&1
   fi
 )" || RC=$?
