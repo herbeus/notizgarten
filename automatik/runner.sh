@@ -112,6 +112,17 @@ SUMMARY="$(printf '%s' "$OUT" | grep -v '^$' | tail -3 | tr '\n' ' ')"
 if [ "$RC" -ne 0 ]; then
   SUMMARY="FEHLER (rc=$RC): $SUMMARY"
 fi
+
+# macOS-Falle: die Festplattenvollzugriff-Freigabe haengt am Binary-Pfad des Agenten, und der
+# enthaelt die Versionsnummer. Nach einem Update des Agenten zeigt die Freigabe ins Leere - der
+# Lauf bricht dann nicht ab, er findet nur nichts mehr. Genau die stille Sorte Defekt, die man
+# monatelang nicht bemerkt. Deshalb hier explizit danach suchen und laut werden.
+case "$OUT" in
+  *"Operation not permitted"*|*"EPERM"*|*"operation not permitted"*)
+    SUMMARY="RECHTEFEHLER: Festplattenvollzugriff pruefen. Nach einem Update des Agenten muss die Freigabe fuer den neuen Binary-Pfad erneut erteilt werden. $SUMMARY"
+    echo "WARN: Zugriff verweigert - siehe docs/setup-macos.md, Abschnitt Festplattenvollzugriff" >>"$LOG"
+    ;;
+esac
 echo "$(date '+%F %T') [$TASK] fertig (rc=$RC)" >>"$LOG"
 
 # ---------- Benachrichtigung ----------

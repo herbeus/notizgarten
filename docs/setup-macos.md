@@ -70,11 +70,28 @@ Geprueft auf macOS 26.5, und die Grenze verlaeuft genau hier:
 | `~/Documents`, `~/Desktop` | verweigert |
 | `~/Library/Mobile Documents` (iCloud) | verweigert |
 
-Testen laesst sich das in einem Befehl, aus dem Programm heraus, das spaeter den Lauf startet:
+**Die Freigabe gilt pro Programm, nicht pro Skript.** Das ist die Stelle, an der fast jeder
+haengenbleibt: Gibst du `/bin/bash` frei, darf Bash selbst zugreifen - eine Umleitung
+`> datei` funktioniert dann. Ein `ls` im selben Skript wird trotzdem abgewiesen, denn der
+zugreifende Prozess ist `/bin/ls`, ein eigenes Programm ohne Freigabe. Gemessen auf macOS 26.5:
+Schreiben per Bash-Umleitung erlaubt, `ls` und `find` im selben Skript verweigert.
 
-```bash
-ls ~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/MeinVault
-```
+Fuer dieses Setup brauchst du deshalb **zwei** Eintraege:
+
+| Eintrag | wofuer |
+|---|---|
+| `/bin/bash` | die Vorpruefungen des Runners (`[ -d "$VAULT" ]`) |
+| der Agent selbst, z.B. `~/.local/share/claude/versions/<version>` | die eigentliche Dateiarbeit im Vault |
+
+Hinzufuegen ueber `+`, im Dateidialog **Cmd+Shift+G** und den Pfad eintippen - versteckte
+Ordner wie `~/.local` sind sonst nicht anwaehlbar. Den echten Pfad des Agenten findest du mit
+`ls -la $(command -v claude)`; ist es ein Symlink, zeigt TCC auf das Ziel.
+
+**Achtung, stille Falle:** Enthaelt der Pfad des Agenten eine **Versionsnummer**, zeigt die
+Freigabe nach dem naechsten Update ins Leere. Der Lauf bricht dann nicht ab - er findet nur
+nichts mehr. Der Runner sucht deshalb in der Ausgabe nach `Operation not permitted` und meldet
+ausdruecklich einen Rechtefehler, statt einen leeren Lauf als Erfolg zu verbuchen. Wenn diese
+Meldung kommt: Freigabe fuer den neuen Pfad erneut erteilen.
 
 **Ueber SSH gibt es diese Rechte gar nicht.** Eine Anmeldung per `ssh` bekommt keine
 TCC-Freigaben, unabhaengig davon, was im Terminal am Geraet erlaubt ist. Das ist beim Testen
