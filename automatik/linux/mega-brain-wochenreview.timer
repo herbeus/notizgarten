@@ -1,0 +1,10 @@
+[Unit]
+Description=Mega Brain Wochenreview (sonntags 18:00)
+
+[Timer]
+OnCalendar=Sun *-*-* 18:00:00
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

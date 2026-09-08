@@ -1,0 +1,35 @@
+# Konfiguration der Mega-Brain-Automatik.
+# Kopieren nach ~/.config/mega-brain/config und anpassen.
+#
+#   mkdir -p ~/.config/mega-brain
+#   cp automatik/config.example ~/.config/mega-brain/config
+#
+# Das ist eine Shell-Datei und wird gesourct. Keine Zugangsdaten hier hinein -
+# der Agent bringt seine eigene Anmeldung mit.
+
+# PFLICHT: absoluter Pfad zum Vault.
+#   macOS   : "$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/MeinVault"
+#   Windows : (aus WSL) /mnt/c/Users/<benutzer>/iCloudDrive/iCloud~md~obsidian/MeinVault
+#   Linux   : "$HOME/MeinVault"
+VAULT="$HOME/MeinVault"
+
+# Wo die Prompt-Dateien dieses Repos liegen.
+PROMPT_DIR="$HOME/mega-brain/prompts"
+
+# Quelle fuers Abend-Destillat: die Transkripte deiner Agenten-Sessions.
+# Fuer Claude Code:
+TRANSCRIPTS="$HOME/.claude/projects"
+
+# Optional fuers Wochenreview: wo deine Repos liegen und unter welcher Adresse du committest.
+REPOS="$HOME/projects"
+GIT_AUTHOR="ich@example.org"
+
+# CLI des Agenten.
+AGENT="claude"
+
+# Log und Zeitlimit.
+LOG="$HOME/.local/state/mega-brain/run.log"
+TIMEOUT_SECS=900
+
+# Benachrichtigung nach jedem Lauf: 1 an, 0 aus.
+NOTIFY=1

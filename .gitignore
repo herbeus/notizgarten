@@ -1,0 +1,8 @@
+# Nie einchecken: ein echtes, gefuelltes Vault
+/vault/
+/MeinVault/
+*.local
+
+# Laufzeit
+*.log
+.DS_Store

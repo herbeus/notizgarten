@@ -1,0 +1,6 @@
+[Unit]
+Description=Mega Brain: wochenreview
+
+[Service]
+Type=oneshot
+ExecStart=%h/mega-brain/automatik/runner.sh wochenreview
