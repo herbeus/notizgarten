@@ -1,5 +1,5 @@
 [Unit]
-Description=Mega Brain Gaertner (monatlich, 1. des Monats 10:00)
+Description=Zettelgarten Gaertner (monatlich, 1. des Monats 10:00)
 
 [Timer]
 OnCalendar=*-*-01 10:00:00

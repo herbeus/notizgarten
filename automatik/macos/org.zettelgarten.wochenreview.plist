@@ -3,12 +3,12 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>org.megabrain.gaertner</string>
+  <string>org.zettelgarten.wochenreview</string>
 
   <key>ProgramArguments</key>
   <array>
-    <string>__HOME__/mega-brain/automatik/runner.sh</string>
-    <string>gaertner</string>
+    <string>__HOME__/zettelgarten/automatik/runner.sh</string>
+    <string>wochenreview</string>
   </array>
 
   <!-- launchd startet mit minimalem PATH. Homebrew und ~/.local/bin muessen mit. -->
@@ -20,8 +20,8 @@
 
   <key>StartCalendarInterval</key>
   <dict>
-    <key>Day</key><integer>1</integer>
-    <key>Hour</key><integer>10</integer>
+    <key>Weekday</key><integer>0</integer>
+    <key>Hour</key><integer>18</integer>
     <key>Minute</key><integer>0</integer>
   </dict>
 
@@ -30,8 +30,8 @@
   <false/>
 
   <key>StandardOutPath</key>
-  <string>__HOME__/.local/state/mega-brain/launchd.out</string>
+  <string>__HOME__/.local/state/zettelgarten/launchd.out</string>
   <key>StandardErrorPath</key>
-  <string>__HOME__/.local/state/mega-brain/launchd.err</string>
+  <string>__HOME__/.local/state/zettelgarten/launchd.err</string>
 </dict>
 </plist>

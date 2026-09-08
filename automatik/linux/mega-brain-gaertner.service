@@ -1,6 +1,0 @@
-[Unit]
-Description=Mega Brain: gaertner
-
-[Service]
-Type=oneshot
-ExecStart=%h/mega-brain/automatik/runner.sh gaertner

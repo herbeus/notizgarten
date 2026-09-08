@@ -1,0 +1,6 @@
+[Unit]
+Description=Zettelgarten: gaertner
+
+[Service]
+Type=oneshot
+ExecStart=%h/zettelgarten/automatik/runner.sh gaertner

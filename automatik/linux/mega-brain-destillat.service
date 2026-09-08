@@ -1,6 +1,0 @@
-[Unit]
-Description=Mega Brain: destillat
-
-[Service]
-Type=oneshot
-ExecStart=%h/mega-brain/automatik/runner.sh destillat

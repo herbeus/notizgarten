@@ -1,4 +1,4 @@
-# Mega Brain
+# Zettelgarten
 
 Ein persoenliches "Second Brain" als Obsidian-Vault, das ein KI-Agent aktiv mitpflegt -
 inklusive der Anleitung, dem leeren Vault-Skelett, den Automatik-Prompts und den Timern
@@ -44,8 +44,8 @@ Diese drei klingen banal. Sie sind der Unterschied zwischen einem System, das la
 ## Schnellstart
 
 ```bash
-git clone <dieses-repo> mega-brain
-cp -r mega-brain/vault-template ~/MeinVault
+git clone <dieses-repo> zettelgarten
+cp -r zettelgarten/vault-template ~/MeinVault
 ```
 
 Dann Obsidian oeffnen, *Open folder as vault*, `~/MeinVault` waehlen. Details je nach

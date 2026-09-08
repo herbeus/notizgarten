@@ -26,8 +26,8 @@ Ohne iCloud tut es jeder Ordner, zum Beispiel `C:\Users\<benutzer>\Documents\Mei
 
 ```bash
 # aus WSL heraus
-git clone <dieses-repo> ~/mega-brain
-cp -r ~/mega-brain/vault-template "/mnt/c/Users/<benutzer>/iCloudDrive/iCloud~md~obsidian/MeinVault"
+git clone <dieses-repo> ~/zettelgarten
+cp -r ~/zettelgarten/vault-template "/mnt/c/Users/<benutzer>/iCloudDrive/iCloud~md~obsidian/MeinVault"
 ```
 
 ## 2. Obsidian
@@ -41,16 +41,16 @@ Community-Plugins wie ueblich: **Dataview**, **Templater**, **Calendar**, **Smar
 ## 3. Automatik in WSL
 
 ```bash
-mkdir -p ~/.config/mega-brain
-cp ~/mega-brain/automatik/config.example ~/.config/mega-brain/config
-$EDITOR ~/.config/mega-brain/config
+mkdir -p ~/.config/zettelgarten
+cp ~/zettelgarten/automatik/config.example ~/.config/zettelgarten/config
+$EDITOR ~/.config/zettelgarten/config
 ```
 
 In der Konfiguration den `/mnt/c/...`-Pfad eintragen, nicht den Windows-Pfad mit Backslashes.
 
 ```bash
-~/mega-brain/automatik/runner.sh destillat      # erst von Hand testen
-~/mega-brain/automatik/linux/install.sh         # dann Timer einrichten
+~/zettelgarten/automatik/runner.sh destillat      # erst von Hand testen
+~/zettelgarten/automatik/linux/install.sh         # dann Timer einrichten
 ```
 
 ### WSL-Eigenheiten
@@ -81,13 +81,13 @@ PowerShell auf. Verpasste Toasts stehen im Info-Center.
 ## 4. Pruefen
 
 ```bash
-systemctl --user list-timers 'mega-brain-*'
-tail -20 ~/.local/state/mega-brain/run.log
+systemctl --user list-timers 'zettelgarten-*'
+tail -20 ~/.local/state/zettelgarten/run.log
 ```
 
 ## Ohne WSL
 
 Geht auch: Der Runner ist ein Bash-Skript und laeuft unter Git Bash. Statt systemd nimmt man
 dann die **Aufgabenplanung** von Windows und laesst sie
-`"C:\Program Files\Git\bin\bash.exe" -lc "~/mega-brain/automatik/runner.sh destillat"`
+`"C:\Program Files\Git\bin\bash.exe" -lc "~/zettelgarten/automatik/runner.sh destillat"`
 ausfuehren. Getestet ist dieser Weg hier nicht - die Timer-Units sind der gepflegte Pfad.

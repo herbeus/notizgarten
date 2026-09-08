@@ -11,16 +11,16 @@ systemctl --user show-environment >/dev/null 2>&1 || {
   exit 1
 }
 
-[ -f "$HOME/.config/mega-brain/config" ] || {
-  echo "FEHLER: ~/.config/mega-brain/config fehlt."
-  echo "  mkdir -p ~/.config/mega-brain"
-  echo "  cp $HERE/../config.example ~/.config/mega-brain/config"
-  echo "  \$EDITOR ~/.config/mega-brain/config"
+[ -f "$HOME/.config/zettelgarten/config" ] || {
+  echo "FEHLER: ~/.config/zettelgarten/config fehlt."
+  echo "  mkdir -p ~/.config/zettelgarten"
+  echo "  cp $HERE/../config.example ~/.config/zettelgarten/config"
+  echo "  \$EDITOR ~/.config/zettelgarten/config"
   exit 1
 }
 
 mkdir -p "$UNITS"
-cp -f "$HERE"/mega-brain-*.service "$HERE"/mega-brain-*.timer "$UNITS/"
+cp -f "$HERE"/zettelgarten-*.service "$HERE"/zettelgarten-*.timer "$UNITS/"
 systemctl --user daemon-reload
 
 echo "Welche Laeufe sollen aktiv sein? (mehrfach moeglich, Leerzeichen getrennt)"
@@ -29,9 +29,9 @@ read -r -p "Auswahl [1 2 3]: " sel
 sel="${sel:-1 2 3}"
 for n in $sel; do
   case "$n" in
-    1) u=mega-brain-destillat ;;
-    2) u=mega-brain-wochenreview ;;
-    3) u=mega-brain-gaertner ;;
+    1) u=zettelgarten-destillat ;;
+    2) u=zettelgarten-wochenreview ;;
+    3) u=zettelgarten-gaertner ;;
     *) echo "uebersprungen: $n"; continue ;;
   esac
   systemctl --user enable --now "$u.timer"
@@ -39,5 +39,5 @@ for n in $sel; do
 done
 
 echo
-echo "Pruefen:  systemctl --user list-timers 'mega-brain-*'"
-echo "Testlauf: ~/mega-brain/automatik/runner.sh destillat"
+echo "Pruefen:  systemctl --user list-timers 'zettelgarten-*'"
+echo "Testlauf: ~/zettelgarten/automatik/runner.sh destillat"

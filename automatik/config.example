@@ -1,8 +1,8 @@
-# Konfiguration der Mega-Brain-Automatik.
-# Kopieren nach ~/.config/mega-brain/config und anpassen.
+# Konfiguration der Zettelgarten-Automatik.
+# Kopieren nach ~/.config/zettelgarten/config und anpassen.
 #
-#   mkdir -p ~/.config/mega-brain
-#   cp automatik/config.example ~/.config/mega-brain/config
+#   mkdir -p ~/.config/zettelgarten
+#   cp automatik/config.example ~/.config/zettelgarten/config
 #
 # Das ist eine Shell-Datei und wird gesourct. Keine Zugangsdaten hier hinein -
 # der Agent bringt seine eigene Anmeldung mit.
@@ -14,7 +14,7 @@
 VAULT="$HOME/MeinVault"
 
 # Wo die Prompt-Dateien dieses Repos liegen.
-PROMPT_DIR="$HOME/mega-brain/prompts"
+PROMPT_DIR="$HOME/zettelgarten/prompts"
 
 # Quelle fuers Abend-Destillat: die Transkripte deiner Agenten-Sessions.
 # Fuer Claude Code:
@@ -28,7 +28,7 @@ GIT_AUTHOR="ich@example.org"
 AGENT="claude"
 
 # Log und Zeitlimit.
-LOG="$HOME/.local/state/mega-brain/run.log"
+LOG="$HOME/.local/state/zettelgarten/run.log"
 TIMEOUT_SECS=900
 
 # Benachrichtigung nach jedem Lauf: 1 an, 0 aus.

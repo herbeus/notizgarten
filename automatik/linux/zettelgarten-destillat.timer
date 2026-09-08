@@ -1,8 +1,8 @@
 [Unit]
-Description=Mega Brain Wochenreview (sonntags 18:00)
+Description=Zettelgarten Abend-Destillat (taeglich 20:00)
 
 [Timer]
-OnCalendar=Sun *-*-* 18:00:00
+OnCalendar=*-*-* 20:00:00
 Persistent=true
 RandomizedDelaySec=300
 

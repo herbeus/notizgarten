@@ -13,14 +13,14 @@ esac
 
 # ---------- Konfiguration ----------
 # Reihenfolge: Umgebungsvariable, dann Konfigdatei, dann Fehler.
-CONF="${MEGABRAIN_CONF:-$HOME/.config/mega-brain/config}"
+CONF="${ZETTELGARTEN_CONF:-$HOME/.config/zettelgarten/config}"
 # shellcheck source=/dev/null
 [ -f "$CONF" ] && . "$CONF"
 
 : "${VAULT:=}"                                   # Pflicht: Pfad zum Vault
-: "${PROMPT_DIR:=$HOME/mega-brain/prompts}"      # wo die Prompt-Dateien liegen
+: "${PROMPT_DIR:=$HOME/zettelgarten/prompts}"      # wo die Prompt-Dateien liegen
 : "${AGENT:=claude}"                             # CLI des Agenten
-: "${LOG:=$HOME/.local/state/mega-brain/run.log}"
+: "${LOG:=$HOME/.local/state/zettelgarten/run.log}"
 : "${TIMEOUT_SECS:=900}"
 : "${NOTIFY:=1}"                                 # 0 = keine Benachrichtigung
 
@@ -52,7 +52,7 @@ mkdir -p "$(dirname "$LOG")"
 
 # ---------- Nur ein Lauf gleichzeitig ----------
 # mkdir ist atomar und gibt es ueberall - flock fehlt auf macOS.
-LOCK="${TMPDIR:-/tmp}/mega-brain-$TASK.lock"
+LOCK="${TMPDIR:-/tmp}/zettelgarten-$TASK.lock"
 if ! mkdir "$LOCK" 2>/dev/null; then
   echo "$(date '+%F %T') [$TASK] laeuft bereits, Abbruch" >>"$LOG"
   exit 0
@@ -116,7 +116,7 @@ echo "$(date '+%F %T') [$TASK] fertig (rc=$RC)" >>"$LOG"
 
 # ---------- Benachrichtigung ----------
 if [ "$NOTIFY" = "1" ]; then
-  "$(dirname "$0")/notify.sh" "Mega Brain: $TASK" "$SUMMARY" 2>/dev/null || true
+  "$(dirname "$0")/notify.sh" "Zettelgarten: $TASK" "$SUMMARY" 2>/dev/null || true
 fi
 
 echo "[$TASK] $SUMMARY"

@@ -6,15 +6,15 @@ AGENTS="$HOME/Library/LaunchAgents"
 
 [ "$(uname -s)" = "Darwin" ] || { echo "FEHLER: nur fuer macOS - unter Linux/WSL ../linux/install.sh nutzen"; exit 1; }
 
-[ -f "$HOME/.config/mega-brain/config" ] || {
-  echo "FEHLER: ~/.config/mega-brain/config fehlt."
-  echo "  mkdir -p ~/.config/mega-brain"
-  echo "  cp $HERE/../config.example ~/.config/mega-brain/config"
-  echo "  \$EDITOR ~/.config/mega-brain/config"
+[ -f "$HOME/.config/zettelgarten/config" ] || {
+  echo "FEHLER: ~/.config/zettelgarten/config fehlt."
+  echo "  mkdir -p ~/.config/zettelgarten"
+  echo "  cp $HERE/../config.example ~/.config/zettelgarten/config"
+  echo "  \$EDITOR ~/.config/zettelgarten/config"
   exit 1
 }
 
-mkdir -p "$AGENTS" "$HOME/.local/state/mega-brain"
+mkdir -p "$AGENTS" "$HOME/.local/state/zettelgarten"
 
 echo "Welche Laeufe sollen aktiv sein? (mehrfach moeglich, Leerzeichen getrennt)"
 echo "  1) destillat (taeglich 20:00)   2) wochenreview (So 18:00)   3) gaertner (monatlich)"
@@ -28,7 +28,7 @@ for n in $sel; do
     3) t=gaertner ;;
     *) echo "uebersprungen: $n"; continue ;;
   esac
-  label="org.megabrain.$t"
+  label="org.zettelgarten.$t"
   # __HOME__ ersetzen: plists kennen keine Variablenexpansion.
   sed "s|__HOME__|$HOME|g" "$HERE/$label.plist" > "$AGENTS/$label.plist"
   launchctl bootout "gui/$UID/$label" 2>/dev/null || true
@@ -51,6 +51,6 @@ Zwei Dinge, die macOS eigen sind:
    nicht fuer jeden ausgefallenen Tag. Bei einem Rechner, der nachts zu ist, lohnt
    eine Startzeit am fruehen Abend statt spaet.
 
-Pruefen:  launchctl list | grep megabrain
-Testlauf: ~/mega-brain/automatik/runner.sh destillat
+Pruefen:  launchctl list | grep zettelgarten
+Testlauf: ~/zettelgarten/automatik/runner.sh destillat
 HINT

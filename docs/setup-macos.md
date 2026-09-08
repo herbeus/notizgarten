@@ -17,9 +17,9 @@ Nutzt du Obsidian Sync, Syncthing oder Git, ist der Ort frei waehlbar, zum Beisp
 `~/Documents/MeinVault`.
 
 ```bash
-git clone <dieses-repo> ~/mega-brain
+git clone <dieses-repo> ~/zettelgarten
 mkdir -p ~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents
-cp -r ~/mega-brain/vault-template ~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/MeinVault
+cp -r ~/zettelgarten/vault-template ~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/MeinVault
 ```
 
 ## 2. Obsidian
@@ -43,16 +43,16 @@ leere Bereichsnotizen sind genau die Sorte Struktur, die spaeter niemand benutzt
 ## 4. Automatik (optional)
 
 ```bash
-mkdir -p ~/.config/mega-brain
-cp ~/mega-brain/automatik/config.example ~/.config/mega-brain/config
-$EDITOR ~/.config/mega-brain/config      # VAULT-Pfad eintragen
-~/mega-brain/automatik/macos/install.sh
+mkdir -p ~/.config/zettelgarten
+cp ~/zettelgarten/automatik/config.example ~/.config/zettelgarten/config
+$EDITOR ~/.config/zettelgarten/config      # VAULT-Pfad eintragen
+~/zettelgarten/automatik/macos/install.sh
 ```
 
 Erst von Hand testen, bevor ein Timer laeuft:
 
 ```bash
-~/mega-brain/automatik/runner.sh destillat
+~/zettelgarten/automatik/runner.sh destillat
 ```
 
 ### Drei macOS-Eigenheiten
@@ -118,25 +118,25 @@ iCloud bleibt unangetastet. Am Mac, in einem Terminal-Fenster (nicht ueber SSH -
 
 ```bash
 # 1. Testvault aus dem leeren Template
-rm -rf ~/vault-test && cp -R ~/mega-brain/vault-template ~/vault-test
+rm -rf ~/vault-test && cp -R ~/zettelgarten/vault-template ~/vault-test
 
 # 2. Config zeigt auf das Testvault
-mkdir -p ~/.config/mega-brain ~/.local/state/mega-brain
-cat > ~/.config/mega-brain/config <<'CONF'
+mkdir -p ~/.config/zettelgarten ~/.local/state/zettelgarten
+cat > ~/.config/zettelgarten/config <<'CONF'
 VAULT="$HOME/vault-test"
-PROMPT_DIR="$HOME/mega-brain/prompts"
+PROMPT_DIR="$HOME/zettelgarten/prompts"
 TRANSCRIPTS="$HOME/.claude/projects"
 AGENT="claude"
-LOG="$HOME/.local/state/mega-brain/run.log"
+LOG="$HOME/.local/state/zettelgarten/run.log"
 NOTIFY=0
 CONF
 
 # 3. Lauf
-~/mega-brain/automatik/runner.sh destillat
+~/zettelgarten/automatik/runner.sh destillat
 
 # 4. Was ist entstanden?
-find ~/vault-test -type f -newer ~/.config/mega-brain/config
-tail -20 ~/.local/state/mega-brain/run.log
+find ~/vault-test -type f -newer ~/.config/zettelgarten/config
+tail -20 ~/.local/state/zettelgarten/run.log
 ```
 
 Erst wenn Dir gefaellt, was dabei herauskommt, zeigt die Config auf das echte Vault. Und auch
@@ -155,8 +155,8 @@ Das ist das Netz fuer den Tag, an dem es doch ans echte Vault geht.
 ## 6. Pruefen
 
 ```bash
-launchctl list | grep megabrain
-tail -20 ~/.local/state/mega-brain/run.log
+launchctl list | grep zettelgarten
+tail -20 ~/.local/state/zettelgarten/run.log
 ```
 
 Nach zwei Wochen einmal nachsehen, ob tatsaechlich etwas entsteht. Laeuft die Automatik zwar,
@@ -165,5 +165,5 @@ produziert aber nichts Brauchbares, ist das ein Befund - siehe [`automatik.md`](
 ## Entfernen
 
 ```bash
-~/mega-brain/automatik/macos/uninstall.sh
+~/zettelgarten/automatik/macos/uninstall.sh
 ```
