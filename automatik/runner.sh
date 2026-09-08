@@ -87,18 +87,21 @@ fi
 # Wichtig: die Regel heisst Edit(pfad), nicht Write(pfad) - Edit deckt alle schreibenden
 # Datei-Werkzeuge ab, eine Write(pfad)-Regel wird von der Rechtepruefung nicht beachtet.
 ALLOW="Read Glob Grep Edit($VAULT/**) Bash(ls:*) Bash(find:*) Bash(cat:*)"
+# Der Prompt geht ueber stdin, NICHT als Argument. Zwei Gruende:
+#   1. --allowedTools ist variadisch und verschluckt ein nachfolgendes Argument als weitere
+#      Regel. Der Prompt landete dadurch in der Rechtepruefung ("Wildcard tool name **Nichts
+#      is not supported") und fehlte gleichzeitig als Eingabe.
+#   2. Ein Prompt in argv laeuft irgendwann gegen ARG_MAX. Ueber stdin nie.
 RC=0
 OUT="$(
   if command -v timeout >/dev/null 2>&1; then
-    timeout --kill-after=30s "$TIMEOUT_SECS" \
+    printf '%s' "$BODY" | timeout --kill-after=30s "$TIMEOUT_SECS" \
       "$AGENT" -p --permission-mode acceptEdits --max-turns 40 \
-      --allowedTools "$ALLOW" \
-      "$BODY" 2>&1
+      --allowedTools "$ALLOW" 2>&1
   else
     # macOS ohne coreutils: kein timeout. Dann eben ohne - der Agent hat --max-turns als Bremse.
-    "$AGENT" -p --permission-mode acceptEdits --max-turns 40 \
-      --allowedTools "$ALLOW" \
-      "$BODY" 2>&1
+    printf '%s' "$BODY" | "$AGENT" -p --permission-mode acceptEdits --max-turns 40 \
+      --allowedTools "$ALLOW" 2>&1
   fi
 )" || RC=$?
 
