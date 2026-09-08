@@ -54,7 +54,7 @@ schlaegt eine leere am Morgen.
 - `07-Archiv/` - Erledigtes und Inaktives.
 - `08-Arbeit/` - beruflicher Bereich, strikt getrennt vom Privaten: `Projekte/`, `Wissen/`,
   plus eigene MOC. Einstieg: `[[MOC - Arbeit]]`.
-- `Tagebuch/` - Tagesnotizen `YYYY-MM-DD`.
+- `Tagebuch/` - Tagesnotizen `YYYY-MM-DD`, Wochenreviews in `Tagebuch/Wochenreview/`.
 
 **Warum die Trennung `08-Arbeit` gegen den Rest?** Beruf und Privates haben verschiedene
 Halbwertszeiten, verschiedene Leser und im Zweifel verschiedene Eigentuemer. Ein Vertrag kann
