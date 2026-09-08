@@ -28,6 +28,7 @@ CONF="${ZETTELGARTEN_CONF:-$HOME/.config/zettelgarten/config}"
 : "${AGENT:=claude}"                             # CLI des Agenten
 : "${LOG:=$HOME/.local/state/zettelgarten/run.log}"
 : "${TIMEOUT_SECS:=900}"
+: "${TIMEOUT_BIN:=}"                             # leer = timeout oder gtimeout suchen
 : "${NOTIFY:=1}"                                 # 0 = keine Benachrichtigung
 : "${TRANSCRIPTS:=}"
 : "${REPOS:=}"
@@ -115,6 +116,11 @@ AGENT_ARGS=(-p --permission-mode default --max-turns 40 --settings "$SETTINGS_JS
 
 if [ "$DRY" = 1 ]; then
   echo "== Aufruf: (cd \"$VAULT\" && $AGENT ${AGENT_ARGS[*]})"
+  if [ -n "$TIMEOUT_BIN" ] || command -v timeout >/dev/null 2>&1 || command -v gtimeout >/dev/null 2>&1; then
+    echo "== Zeitlimit: $TIMEOUT_SECS s"
+  else
+    echo "== Zeitlimit: keins (weder timeout noch gtimeout gefunden - coreutils installieren)"
+  fi
   echo "== Rechte:"; printf '%s\n' "$SETTINGS_JSON"
   [ -n "$UNFILLED" ] && { echo "== WARN, ungefuellte Platzhalter:"; printf '%s\n' "$UNFILLED"; }
   echo "== Prompt:"; printf '%s\n' "$BODY"
@@ -154,11 +160,18 @@ fi
 # Der Prompt geht ueber stdin, NICHT als Argument. Zwei Gruende:
 #   1. Ein nachfolgendes Argument wird von variadischen Flags als weiterer Wert geschluckt.
 #   2. Ein Prompt in argv laeuft irgendwann gegen ARG_MAX. Ueber stdin nie.
+# Homebrew installiert die GNU-coreutils mit g-Praefix: gtimeout, nicht timeout.
+# TIMEOUT_BIN aus der Config gewinnt; leer = beide Namen probieren.
+if [ -z "$TIMEOUT_BIN" ]; then
+  for c in timeout gtimeout; do
+    command -v "$c" >/dev/null 2>&1 && { TIMEOUT_BIN="$c"; break; }
+  done
+fi
 cd "$VAULT" || exit 1
 RC=0
 OUT="$(
-  if command -v timeout >/dev/null 2>&1; then
-    printf '%s' "$BODY" | timeout --kill-after=30s "$TIMEOUT_SECS" "$AGENT" "${AGENT_ARGS[@]}" 2>&1
+  if [ -n "$TIMEOUT_BIN" ]; then
+    printf '%s' "$BODY" | "$TIMEOUT_BIN" --kill-after=30s "$TIMEOUT_SECS" "$AGENT" "${AGENT_ARGS[@]}" 2>&1
   else
     # macOS ohne coreutils: kein timeout. Dann eben ohne - der Agent hat --max-turns als Bremse.
     printf '%s' "$BODY" | "$AGENT" "${AGENT_ARGS[@]}" 2>&1

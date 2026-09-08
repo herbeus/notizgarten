@@ -304,11 +304,41 @@ test_log_warnt_bei_offenem_platzhalter() {
 # ---------- Timeout ----------
 
 test_timeout_bricht_haengenden_agenten_ab() {
-  command -v timeout >/dev/null 2>&1 || t_skip "kein timeout (macOS ohne coreutils) - Runner laeuft dann ohne Limit"
+  command -v timeout >/dev/null 2>&1 || command -v gtimeout >/dev/null 2>&1 \
+    || t_skip "weder timeout noch gtimeout (macOS ohne coreutils) - Runner laeuft dann ohne Limit"
   is_windows && t_skip "Signale unter Git Bash nicht verlaesslich"
   write_conf 'TIMEOUT_SECS=1'
   rc=0; out="$(FAKE_SLEEP=6 runner destillat 2>&1)" || rc=$?
   assert_rc 124 "$rc"
   assert_contains "$out" "FEHLER (rc=124)"
   assert_no_dir "$TMPDIR/zettelgarten-destillat.lock" "Lock nach Timeout nicht entfernt"
+}
+
+test_timeout_konfiguriertes_kommando_wird_benutzt() {
+  # Homebrew nennt das GNU-Kommando gtimeout. TIMEOUT_BIN erzwingt ein bestimmtes Kommando;
+  # die Autoerkennung von gtimeout beweist die macOS-CI mit installierten coreutils.
+  cat >"$TMP/bin/gtimeout" <<'EOF'
+#!/usr/bin/env bash
+echo "gtimeout $1 $2" >>"$FAKE_RECORD.gtimeout"
+shift 2; exec "$@"
+EOF
+  chmod +x "$TMP/bin/gtimeout"
+  write_conf 'TIMEOUT_SECS=7' 'TIMEOUT_BIN=gtimeout'
+  rc=0; runner destillat >/dev/null 2>&1 || rc=$?
+  assert_rc 0 "$rc"
+  assert_file "$FAKE_RECORD.gtimeout" "konfiguriertes Kommando wurde nicht benutzt"
+  assert_contains "$(cat "$FAKE_RECORD.gtimeout")" "gtimeout --kill-after=30s 7"
+  assert_file "$FAKE_RECORD/argv" "Agent wurde nicht durchgereicht"
+}
+
+test_timeout_autoerkennung_findet_gtimeout_ohne_timeout() {
+  command -v timeout >/dev/null 2>&1 && t_skip "timeout vorhanden - Autoerkennung von gtimeout nur ohne timeout pruefbar (macOS mit Homebrew)"
+  command -v gtimeout >/dev/null 2>&1 || t_skip "kein gtimeout"
+  out="$(runner destillat --dry-run)"
+  assert_contains "$out" "== Zeitlimit: 900 s"
+}
+
+test_dryrun_zeigt_zeitlimit() {
+  out="$(runner destillat --dry-run)"
+  assert_contains "$out" "== Zeitlimit:"
 }

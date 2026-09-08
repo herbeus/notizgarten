@@ -28,6 +28,10 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get install -y shellcheck
 
+      - name: shellcheck und coreutils installieren (gtimeout)
+        if: runner.os == 'macOS'
+        run: brew install shellcheck coreutils
+
       - name: Umgebung
         shell: bash
         run: |

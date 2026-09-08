@@ -126,7 +126,8 @@ der iCloud-Zugriff ueber den Festplattenvollzugriff.
 
 **Kein Homebrew, kein `timeout`.** Auf einem frischen macOS fehlen die GNU-Coreutils. Der Runner
 faengt das ab und laeuft dann ohne Zeitlimit, gebremst nur durch `--max-turns`. Wer ein hartes
-Limit will, installiert `coreutils` - der Runner nutzt `timeout`, sobald es da ist.
+Limit will, installiert `brew install coreutils`. Homebrew nennt das Kommando `gtimeout`; der
+Runner sucht beide Namen. `--dry-run` zeigt in der Zeile "Zeitlimit", ob eines gefunden wurde.
 
 Ebenso liegt der Agent oft in `~/.local/bin` und ist im **nicht-interaktiven** PATH unsichtbar.
 Der Runner ergaenzt den Pfad selbst; wer eigene Skripte baut, muss daran denken.

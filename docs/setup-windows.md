@@ -95,4 +95,6 @@ tail -20 ~/.local/state/zettelgarten/run.log
 Geht auch: Der Runner ist ein Bash-Skript und laeuft unter Git Bash. Statt systemd nimmt man
 dann die **Aufgabenplanung** von Windows und laesst sie
 `"C:\Program Files\Git\bin\bash.exe" -lc "~/zettelgarten/automatik/runner.sh destillat"`
-ausfuehren. Getestet ist dieser Weg hier nicht - die Timer-Units sind der gepflegte Pfad.
+ausfuehren. Der Runner selbst laeuft in der CI unter Git Bash (mit einem Fake-Agenten, siehe
+`tests/`); der Weg ueber die Aufgabenplanung und ein echter Agentenlauf sind dort nicht
+getestet. Die Timer-Units in WSL sind der gepflegte Pfad.

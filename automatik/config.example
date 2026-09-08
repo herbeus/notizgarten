@@ -30,6 +30,8 @@ AGENT="claude"
 # Log und Zeitlimit.
 LOG="$HOME/.local/state/zettelgarten/run.log"
 TIMEOUT_SECS=900
+# Kommando fuer das Zeitlimit. Leer = "timeout" oder "gtimeout" (Homebrew) im PATH suchen.
+#TIMEOUT_BIN=""
 
 # Benachrichtigung nach jedem Lauf: 1 an, 0 aus.
 NOTIFY=1
