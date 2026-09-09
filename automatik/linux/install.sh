@@ -19,8 +19,16 @@ systemctl --user show-environment >/dev/null 2>&1 || {
   exit 1
 }
 
+# Die Units zeigen per %h/zettelgarten auf das Repo. Liegt es woanders (z.B. unter
+# ~/projects/zettelgarten), muss der Pfad beim Einspielen ersetzt werden - sonst startet
+# systemd ein Skript, das es nicht gibt, und der Timer scheitert stumm.
+REPO="$(cd "$HERE/../.." && pwd)"
 mkdir -p "$UNITS"
-cp -f "$HERE"/zettelgarten-*.service "$HERE"/zettelgarten-*.timer "$UNITS/"
+for f in "$HERE"/zettelgarten-*.service; do
+  sed "s|%h/zettelgarten/|$REPO/|" "$f" > "$UNITS/$(basename "$f")"
+done
+cp -f "$HERE"/zettelgarten-*.timer "$UNITS/"
+echo "Runner-Pfad in den Units: $REPO/automatik/runner.sh"
 systemctl --user daemon-reload
 
 echo "Welche Laeufe sollen aktiv sein? (mehrfach moeglich, Leerzeichen getrennt)"
