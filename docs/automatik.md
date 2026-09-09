@@ -124,6 +124,22 @@ Timer und Runner-Skripte liegen in [`../automatik/`](../automatik/):
 
 Beide rufen denselben Runner auf, der den Agenten headless mit dem passenden Prompt startet.
 
+## Nur eine Maschine bekommt den Timer
+
+Liegt das Vault in einem Cloud-Ordner, koennen mehrere Rechner es sehen - und mehrere
+Automatiken hineinschreiben. Tun sie das gleichzeitig, entstehen Konfliktkopien, und aus einer
+Notiz werden zwei mit fast gleichem Inhalt. Genau das, was Regel B verhindern soll, nur eine
+Ebene tiefer, wo der Agent es nicht mehr sehen kann.
+
+Deshalb: **eine Maschine bekommt den Timer, alle anderen bleiben manuell.** Waehle die, auf der
+die meisten Sessions entstehen - dort liegt die Substanz. Auf den uebrigen Rechnern laeuft der
+Lauf nur auf Zuruf, und nicht waehrend die erste arbeitet.
+
+Ein zweiter Grund fuer dieselbe Regel: Der Sync ist nicht sofort. Zwischen "auf Rechner A
+geschrieben" und "auf Rechner B sichtbar" liegen je nach Anbieter Minuten. Ein Lauf auf B, der
+in dieser Luecke startet, sieht den Stand von A noch nicht - und legt an, was drueben schon
+steht.
+
 ## Der Kalender
 
 Bewusst **optional**. In der ersten Fassung hing der ganze Tages-Task an ihm, und als er nicht
