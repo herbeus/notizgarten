@@ -50,6 +50,19 @@ PROMPT_FILE="$PROMPT_DIR/$PROMPT_NAME"
 
 mkdir -p "$(dirname "$LOG")"
 
+# ---------- Vorpruefung: darf ueberhaupt geschrieben werden? ----------
+# Deterministisch, und darum besser als jede Suche in der Ausgabe: Ein Lauf, der erst nach
+# Minuten am fehlenden Recht scheitert, kostet Zeit und Tokens. Typischer Fall ist macOS-TCC
+# bei einem Vault in iCloud.
+PROBE="$VAULT/.zettelgarten-probe"
+if ! : > "$PROBE" 2>/dev/null; then
+  echo "FEHLER: kein Schreibzugriff auf $VAULT" >&2
+  echo "  macOS: Festplattenvollzugriff fuer das aufrufende Programm erteilen und es NEU STARTEN" >&2
+  echo "  (siehe docs/setup-macos.md)" >&2
+  exit 1
+fi
+rm -f "$PROBE"
+
 # ---------- Nur ein Lauf gleichzeitig ----------
 # mkdir ist atomar und gibt es ueberall - flock fehlt auf macOS.
 LOCK="${TMPDIR:-/tmp}/zettelgarten-$TASK.lock"
@@ -83,6 +96,10 @@ if printf '%s' "$BODY" | grep -q '<<'; then
 fi
 
 # ---------- Lauf ----------
+# Zeitmarke fuer die Nachpruefung: was hat der Lauf tatsaechlich angefasst?
+STAMP="${TMPDIR:-/tmp}/zettelgarten-$TASK.stamp"
+: > "$STAMP"
+
 # Schreibrechte bewusst auf das Vault beschraenkt.
 # Wichtig: die Regel heisst Edit(pfad), nicht Write(pfad) - Edit deckt alle schreibenden
 # Datei-Werkzeuge ab, eine Write(pfad)-Regel wird von der Rechtepruefung nicht beachtet.
@@ -123,26 +140,17 @@ if [ "$RC" -ne 0 ]; then
   SUMMARY="FEHLER (rc=$RC): $SUMMARY"
 fi
 
-# Zwei stille Fehlschlaege, die beide NICHT als Fehler zurueckkommen: der Lauf endet mit
-# Erfolg, hat aber nichts geschrieben. Ohne diese Pruefungen faellt so etwas monatelang
-# nicht auf - genau die Sorte Defekt, an der das Vorgaengersetup gestorben ist.
+# Stille Fehlschlaege abfangen: der Lauf endet mit Erfolg, hat aber nichts geschrieben.
+# Entscheidend ist die Kombination - eine Rechte-Meldung ALLEIN ist kein Beweis, denn der
+# Agent schreibt voellig zu Recht auch Notizen UEBER solche Fehler. Erst wenn zusaetzlich
+# keine einzige Datei angefasst wurde, ist es wirklich ein Fehlschlag.
+# (Ein Lauf ohne Funde aendert ebenfalls nichts - deshalb braucht es beide Bedingungen.)
+TOUCHED="$(find "$VAULT" -type f -newer "$STAMP" -not -path '*/.obsidian/*' -not -path '*/.trash/*' 2>/dev/null | head -1)"
+if [ -z "$TOUCHED" ] && printf '%s' "$OUT" | grep -qE 'not granted|nicht freigegeben|Operation not permitted|EPERM'; then
+  SUMMARY="RECHTEFEHLER: nichts geschrieben und Zugriff bemaengelt. Arbeitsbereich (--add-dir) und Festplattenvollzugriff pruefen. $SUMMARY"
+  echo "WARN: Lauf ohne Schreibzugriff - siehe docs/setup-macos.md" >>"$LOG"
+fi
 
-# (1) Arbeitsbereich: Vault ausserhalb des Arbeitsverzeichnisses und kein --add-dir.
-case "$OUT" in
-  *"nicht freigegeben"*|*"not granted"*|*"Permission to"*)
-    SUMMARY="ARBEITSBEREICH: Schreiben wurde abgelehnt. Liegt das Vault ausserhalb des Arbeitsverzeichnisses? --add-dir pruefen. $SUMMARY"
-    echo "WARN: Schreibzugriff abgelehnt - Arbeitsbereich pruefen" >>"$LOG"
-    ;;
-esac
-
-# (2) macOS-TCC: die Freigabe haengt am Binary-Pfad des Agenten, und der enthaelt die
-# Versionsnummer. Nach einem Update zeigt sie ins Leere.
-case "$OUT" in
-  *"Operation not permitted"*|*"EPERM"*|*"operation not permitted"*)
-    SUMMARY="RECHTEFEHLER: Festplattenvollzugriff pruefen. Nach einem Update des Agenten muss die Freigabe fuer den neuen Binary-Pfad erneut erteilt werden. $SUMMARY"
-    echo "WARN: Zugriff verweigert - siehe docs/setup-macos.md, Abschnitt Festplattenvollzugriff" >>"$LOG"
-    ;;
-esac
 echo "$(date '+%F %T') [$TASK] fertig (rc=$RC)" >>"$LOG"
 
 # ---------- Benachrichtigung ----------
