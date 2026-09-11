@@ -53,6 +53,15 @@ Fuer jede Erkenntnis, die die Probe besteht:
    - beruflich -> `08-Arbeit/Wissen/`
    - privat -> `03-Notizen/`
    - unklar, ob es taugt -> `00-Inbox/`
+
+   **Beruflich heisst: im Auftrag des Arbeitgebers oder Kunden entstanden.** Nicht: technisch.
+   Eine Notiz ueber Vitest, npm oder Git ist nicht deshalb beruflich, weil sie nach Arbeit
+   aussieht. Entscheidend ist das **Projekt, aus dem sie stammt**: eigene Open-Source-Projekte,
+   dieses Setup, private Werkzeuge -> privat, also `03-Notizen/` und **kein** Tag `beruf`.
+   Im Zweifel hilft der Wikilink: Verlinkt die Notiz auf ein Projekt in `01-Projekte/`, gehoert
+   sie nicht nach `08-Arbeit/`. Diese Grenze ist nicht kosmetisch - berufliche Inhalte koennen
+   bei Vertragsende geloescht werden muessen, private nicht; ein falsch einsortierter Fund
+   verschwindet dann mit.
 3. Frontmatter nach der Konvention in `CLAUDE.md`.
 4. Dateiname: sprechender Titel **ohne `/`** - ein Schraegstrich erzeugt in Obsidian einen
    Unterordner.

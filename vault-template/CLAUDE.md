@@ -56,6 +56,11 @@ schlaegt eine leere am Morgen.
   plus eigene MOC. Einstieg: `[[MOC - Arbeit]]`.
 - `Tagebuch/` - Tagesnotizen `YYYY-MM-DD`.
 
+**Was zaehlt als beruflich?** Was im Auftrag des Arbeitgebers oder Kunden entstanden ist -
+nicht, was technisch aussieht. Eigene Open-Source-Projekte, dieses Setup, private Werkzeuge
+sind privat, auch wenn es um npm, Git oder CI geht. Faustregel: verlinkt eine Notiz auf ein
+Projekt in `01-Projekte/`, gehoert sie nicht nach `08-Arbeit/`.
+
 **Warum die Trennung `08-Arbeit` gegen den Rest?** Beruf und Privates haben verschiedene
 Halbwertszeiten, verschiedene Leser und im Zweifel verschiedene Eigentuemer. Ein Vertrag kann
 enden und verlangen, dass berufliche Inhalte verschwinden - dann muss klar sein, was das ist.
