@@ -34,6 +34,16 @@ Du schreibst genau eine Datei: den Report.
 9. **Zugangsdaten im Klartext** - Muster, die nach Token, Schluessel oder Passwort aussehen.
    **Nenne nur Datei und Zeilennummer, niemals den Wert.** Das ist der wichtigste Befund
    ueberhaupt, wenn er auftritt.
+10. **Falsch einsortierte Notizen an der Grenze beruflich/privat.** Zwei Muster:
+    - Eine Notiz in `08-Arbeit/` verlinkt auf ein Projekt in `01-Projekte/` oder traegt
+      Spuren eines privaten Projekts - dann ist sie vermutlich privat und liegt im falschen Ast.
+    - Eine Notiz ausserhalb von `08-Arbeit/` traegt das Tag `beruf`, oder eine in `08-Arbeit/`
+      traegt es nicht.
+    - Eine MOC in `08-Arbeit/` kuratiert Notizen, die ausserhalb liegen.
+    Das ist kein Schoenheitsfehler: berufliche Inhalte koennen bei Vertragsende geloescht werden
+    muessen. Ein privater Fund im falschen Ast verschwindet dann mit, ein beruflicher im privaten
+    bleibt, wo er nicht bleiben darf. Nenne die Notiz, den Hinweis (Link, Tag, Spur) und den
+    vermuteten richtigen Ort. **Verschiebe nichts.**
 
 ### Der Report
 
