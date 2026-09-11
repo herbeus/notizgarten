@@ -1,0 +1,6 @@
+[Unit]
+Description=Notizgarten: abendlese
+
+[Service]
+Type=oneshot
+ExecStart=%h/notizgarten/automatik/runner.sh abendlese

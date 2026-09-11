@@ -64,7 +64,7 @@ Ein guter Test nach ein paar Wochen: Frag den Agenten etwas, das er nur aus dem 
 kann, und sieh nach, ob er danach **von selbst** eine Notiz anlegt oder ergaenzt. Tut er das
 nicht, wird die Datei entweder nicht gelesen, oder Regel 2 steht zu vage darin.
 
-Zweiter Test: Lass einen Destillat-Lauf an einem Tag laufen, an dem nichts passiert ist. Legt
+Zweiter Test: Lass einen Abendlese-Lauf an einem Tag laufen, an dem nichts passiert ist. Legt
 er trotzdem eine Datei an, ist Regel A nicht deutlich genug.
 
 ## Andere Agenten

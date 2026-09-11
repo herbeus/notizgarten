@@ -8,7 +8,7 @@
 # Nachricht mit Anfuehrungszeichen fremder Code in AppleScript oder PowerShell einschleusen.
 set -u
 
-export MB_TITLE="${1:-Zettelgarten}"
+export MB_TITLE="${1:-Notizgarten}"
 export MB_MSG="${2:-}"
 
 case "$(uname -s)" in
@@ -26,7 +26,7 @@ $x=[Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Wind
 $t=$x.GetElementsByTagName("text")
 $t.Item(0).InnerText=$env:MB_TITLE
 $t.Item(1).InnerText=$env:MB_MSG
-[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("zettelgarten").Show([Windows.UI.Notifications.ToastNotification]::new($x))
+[Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("notizgarten").Show([Windows.UI.Notifications.ToastNotification]::new($x))
 ' >/dev/null 2>&1
     else
       command -v notify-send >/dev/null 2>&1 && notify-send "$MB_TITLE" "$MB_MSG" >/dev/null 2>&1

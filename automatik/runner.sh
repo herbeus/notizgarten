@@ -1,26 +1,27 @@
 #!/usr/bin/env bash
-# runner.sh <destillat|wochenreview|gaertner> - startet einen Automatik-Lauf headless.
+# runner.sh <abendlese|wochenreview|gaertner> - startet einen Automatik-Lauf headless.
 #
 # Wird von systemd (Linux/WSL) oder launchd (macOS) aufgerufen, laeuft aber auch von Hand.
 # Bewusst portabel gehalten: macOS bringt bash 3.2 mit, kein flock, und BSD-stat statt GNU-stat.
 set -uo pipefail
 
 TASK="${1:-}"
+[ "$TASK" = "destillat" ] && TASK=abendlese   # alter Name, bis 2026-09-11
 case "$TASK" in
-  destillat|wochenreview|gaertner) ;;
-  *) echo "usage: runner.sh <destillat|wochenreview|gaertner>" >&2; exit 2 ;;
+  abendlese|wochenreview|gaertner) ;;
+  *) echo "usage: runner.sh <abendlese|wochenreview|gaertner>" >&2; exit 2 ;;
 esac
 
 # ---------- Konfiguration ----------
 # Reihenfolge: Umgebungsvariable, dann Konfigdatei, dann Fehler.
-CONF="${ZETTELGARTEN_CONF:-$HOME/.config/zettelgarten/config}"
+CONF="${NOTIZGARTEN_CONF:-$HOME/.config/notizgarten/config}"
 # shellcheck source=/dev/null
 [ -f "$CONF" ] && . "$CONF"
 
 : "${VAULT:=}"                                   # Pflicht: Pfad zum Vault
-: "${PROMPT_DIR:=$HOME/zettelgarten/prompts}"      # wo die Prompt-Dateien liegen
+: "${PROMPT_DIR:=$HOME/notizgarten/prompts}"      # wo die Prompt-Dateien liegen
 : "${AGENT:=claude}"                             # CLI des Agenten
-: "${LOG:=$HOME/.local/state/zettelgarten/run.log}"
+: "${LOG:=$HOME/.local/state/notizgarten/run.log}"
 : "${TIMEOUT_SECS:=900}"
 : "${NOTIFY:=1}"                                 # 0 = keine Benachrichtigung
 
@@ -41,7 +42,7 @@ command -v "$AGENT" >/dev/null 2>&1 || { echo "FEHLER: '$AGENT' nicht im PATH" >
 # kann ein mehrzeiliges case innerhalb von $( ) nicht parsen, bash 5 dagegen schon.
 # Der Fehler faellt damit erst auf dem Mac auf.
 case "$TASK" in
-  destillat)    PROMPT_NAME=abend-destillat.md ;;
+  abendlese)    PROMPT_NAME=abendlese.md ;;
   wochenreview) PROMPT_NAME=wochenreview.md ;;
   gaertner)     PROMPT_NAME=gaertner.md ;;
 esac
@@ -54,7 +55,7 @@ mkdir -p "$(dirname "$LOG")"
 # Deterministisch, und darum besser als jede Suche in der Ausgabe: Ein Lauf, der erst nach
 # Minuten am fehlenden Recht scheitert, kostet Zeit und Tokens. Typischer Fall ist macOS-TCC
 # bei einem Vault in iCloud.
-PROBE="$VAULT/.zettelgarten-probe"
+PROBE="$VAULT/.notizgarten-probe"
 if ! : > "$PROBE" 2>/dev/null; then
   echo "FEHLER: kein Schreibzugriff auf $VAULT" >&2
   echo "  macOS: Festplattenvollzugriff fuer das aufrufende Programm erteilen und es NEU STARTEN" >&2
@@ -65,7 +66,7 @@ rm -f "$PROBE"
 
 # ---------- Nur ein Lauf gleichzeitig ----------
 # mkdir ist atomar und gibt es ueberall - flock fehlt auf macOS.
-LOCK="${TMPDIR:-/tmp}/zettelgarten-$TASK.lock"
+LOCK="${TMPDIR:-/tmp}/notizgarten-$TASK.lock"
 if ! mkdir "$LOCK" 2>/dev/null; then
   echo "$(date '+%F %T') [$TASK] laeuft bereits, Abbruch" >>"$LOG"
   exit 0
@@ -97,7 +98,7 @@ fi
 
 # ---------- Lauf ----------
 # Zeitmarke fuer die Nachpruefung: was hat der Lauf tatsaechlich angefasst?
-STAMP="${TMPDIR:-/tmp}/zettelgarten-$TASK.stamp"
+STAMP="${TMPDIR:-/tmp}/notizgarten-$TASK.stamp"
 : > "$STAMP"
 
 # Schreibrechte bewusst auf das Vault beschraenkt.
@@ -155,7 +156,7 @@ echo "$(date '+%F %T') [$TASK] fertig (rc=$RC)" >>"$LOG"
 
 # ---------- Benachrichtigung ----------
 if [ "$NOTIFY" = "1" ]; then
-  "$(dirname "$0")/notify.sh" "Zettelgarten: $TASK" "$SUMMARY" 2>/dev/null || true
+  "$(dirname "$0")/notify.sh" "Notizgarten: $TASK" "$SUMMARY" 2>/dev/null || true
 fi
 
 echo "[$TASK] $SUMMARY"

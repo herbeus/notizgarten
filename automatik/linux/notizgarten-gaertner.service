@@ -1,0 +1,6 @@
+[Unit]
+Description=Notizgarten: gaertner
+
+[Service]
+Type=oneshot
+ExecStart=%h/notizgarten/automatik/runner.sh gaertner

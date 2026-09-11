@@ -110,7 +110,7 @@ Tags als Inline-Array: `tags: [idee, beruf]`.
 
 Siehe `docs/automatik.md` und die Prompts in `prompts/` des Setup-Repos. Kurzfassung:
 
-- **Taeglich abends: Destillat.** Liest die Transkripte des Tages, haelt fest, was dauerhaft
+- **Taeglich abends: Abendlese.** Liest die Transkripte des Tages, haelt fest, was dauerhaft
   nuetzlich ist. War nichts, wird nichts geschrieben (Regel A).
 - **Sonntags: Wochenreview.** Bestandsaufnahme mit der Anti-Wiederholungs-Regel (Regel B).
 - **Monatlich: Gaertner.** Kaputte Wikilinks, verwaiste Notizen, veraltete Statusangaben.

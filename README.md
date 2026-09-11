@@ -1,4 +1,4 @@
-# Zettelgarten
+# Notizgarten
 
 Ein persoenliches "Second Brain" als Obsidian-Vault, das ein KI-Agent aktiv mitpflegt -
 inklusive der Anleitung, dem leeren Vault-Skelett, den Automatik-Prompts und den Timern
@@ -34,7 +34,7 @@ Diese drei klingen banal. Sie sind der Unterschied zwischen einem System, das la
 | [`docs/setup-windows.md`](docs/setup-windows.md) | Einrichtung auf Windows, Zugriff aus WSL |
 | [`docs/setup-mobil.md`](docs/setup-mobil.md) | iOS und Android, Capture unterwegs |
 | [`docs/agent-betrieb.md`](docs/agent-betrieb.md) | Wie die `CLAUDE.md` den Agenten steuert |
-| [`docs/automatik.md`](docs/automatik.md) | Abend-Destillat, Wochenreview, Gaertner - und was vorher schiefging |
+| [`docs/automatik.md`](docs/automatik.md) | Abendlese, Wochenreview, Gaertner - und was vorher schiefging |
 | [`docs/grenzen.md`](docs/grenzen.md) | Was bewusst nicht geht und warum |
 | [`docs/sicherheit.md`](docs/sicherheit.md) | Was nie ins Vault gehoert |
 | [`prompts/`](prompts/) | Reproduktions-Prompt und die drei Automatik-Prompts |
@@ -44,8 +44,8 @@ Diese drei klingen banal. Sie sind der Unterschied zwischen einem System, das la
 ## Schnellstart
 
 ```bash
-git clone <dieses-repo> zettelgarten
-cp -r zettelgarten/vault-template ~/MeinVault
+git clone <dieses-repo> notizgarten
+cp -r notizgarten/vault-template ~/MeinVault
 ```
 
 Dann Obsidian oeffnen, *Open folder as vault*, `~/MeinVault` waehlen. Details je nach

@@ -1,8 +1,8 @@
 [Unit]
-Description=Zettelgarten Abend-Destillat (taeglich 20:00)
+Description=Notizgarten Wochenreview (sonntags 18:00)
 
 [Timer]
-OnCalendar=*-*-* 20:00:00
+OnCalendar=Sun *-*-* 18:00:00
 Persistent=true
 RandomizedDelaySec=300
 

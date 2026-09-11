@@ -17,9 +17,9 @@ Nutzt du Obsidian Sync, Syncthing oder Git, ist der Ort frei waehlbar, zum Beisp
 `~/Documents/MeinVault`.
 
 ```bash
-git clone <dieses-repo> ~/zettelgarten
+git clone <dieses-repo> ~/notizgarten
 mkdir -p ~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents
-cp -r ~/zettelgarten/vault-template ~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/MeinVault
+cp -r ~/notizgarten/vault-template ~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/MeinVault
 ```
 
 ## 2. Obsidian
@@ -43,16 +43,16 @@ leere Bereichsnotizen sind genau die Sorte Struktur, die spaeter niemand benutzt
 ## 4. Automatik (optional)
 
 ```bash
-mkdir -p ~/.config/zettelgarten
-cp ~/zettelgarten/automatik/config.example ~/.config/zettelgarten/config
-$EDITOR ~/.config/zettelgarten/config      # VAULT-Pfad eintragen
-~/zettelgarten/automatik/macos/install.sh
+mkdir -p ~/.config/notizgarten
+cp ~/notizgarten/automatik/config.example ~/.config/notizgarten/config
+$EDITOR ~/.config/notizgarten/config      # VAULT-Pfad eintragen
+~/notizgarten/automatik/macos/install.sh
 ```
 
 Erst von Hand testen, bevor ein Timer laeuft:
 
 ```bash
-~/zettelgarten/automatik/runner.sh destillat
+~/notizgarten/automatik/runner.sh abendlese
 ```
 
 ### Drei macOS-Eigenheiten
@@ -135,25 +135,25 @@ iCloud bleibt unangetastet. Am Mac, in einem Terminal-Fenster (nicht ueber SSH -
 
 ```bash
 # 1. Testvault aus dem leeren Template
-rm -rf ~/vault-test && cp -R ~/zettelgarten/vault-template ~/vault-test
+rm -rf ~/vault-test && cp -R ~/notizgarten/vault-template ~/vault-test
 
 # 2. Config zeigt auf das Testvault
-mkdir -p ~/.config/zettelgarten ~/.local/state/zettelgarten
-cat > ~/.config/zettelgarten/config <<'CONF'
+mkdir -p ~/.config/notizgarten ~/.local/state/notizgarten
+cat > ~/.config/notizgarten/config <<'CONF'
 VAULT="$HOME/vault-test"
-PROMPT_DIR="$HOME/zettelgarten/prompts"
+PROMPT_DIR="$HOME/notizgarten/prompts"
 TRANSCRIPTS="$HOME/.claude/projects"
 AGENT="claude"
-LOG="$HOME/.local/state/zettelgarten/run.log"
+LOG="$HOME/.local/state/notizgarten/run.log"
 NOTIFY=0
 CONF
 
 # 3. Lauf
-~/zettelgarten/automatik/runner.sh destillat
+~/notizgarten/automatik/runner.sh abendlese
 
 # 4. Was ist entstanden?
-find ~/vault-test -type f -newer ~/.config/zettelgarten/config
-tail -20 ~/.local/state/zettelgarten/run.log
+find ~/vault-test -type f -newer ~/.config/notizgarten/config
+tail -20 ~/.local/state/notizgarten/run.log
 ```
 
 Erst wenn Dir gefaellt, was dabei herauskommt, zeigt die Config auf das echte Vault. Und auch
@@ -172,8 +172,8 @@ Das ist das Netz fuer den Tag, an dem es doch ans echte Vault geht.
 ## 6. Pruefen
 
 ```bash
-launchctl list | grep zettelgarten
-tail -20 ~/.local/state/zettelgarten/run.log
+launchctl list | grep notizgarten
+tail -20 ~/.local/state/notizgarten/run.log
 ```
 
 Nach zwei Wochen einmal nachsehen, ob tatsaechlich etwas entsteht. Laeuft die Automatik zwar,
@@ -182,5 +182,5 @@ produziert aber nichts Brauchbares, ist das ein Befund - siehe [`automatik.md`](
 ## Entfernen
 
 ```bash
-~/zettelgarten/automatik/macos/uninstall.sh
+~/notizgarten/automatik/macos/uninstall.sh
 ```

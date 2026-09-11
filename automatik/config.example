@@ -1,8 +1,8 @@
-# Konfiguration der Zettelgarten-Automatik.
-# Kopieren nach ~/.config/zettelgarten/config und anpassen.
+# Konfiguration der Notizgarten-Automatik.
+# Kopieren nach ~/.config/notizgarten/config und anpassen.
 #
-#   mkdir -p ~/.config/zettelgarten
-#   cp automatik/config.example ~/.config/zettelgarten/config
+#   mkdir -p ~/.config/notizgarten
+#   cp automatik/config.example ~/.config/notizgarten/config
 #
 # Das ist eine Shell-Datei und wird gesourct. Keine Zugangsdaten hier hinein -
 # der Agent bringt seine eigene Anmeldung mit.
@@ -14,9 +14,9 @@
 VAULT="$HOME/MeinVault"
 
 # Wo die Prompt-Dateien dieses Repos liegen.
-PROMPT_DIR="$HOME/zettelgarten/prompts"
+PROMPT_DIR="$HOME/notizgarten/prompts"
 
-# Quelle fuers Abend-Destillat: die Transkripte deiner Agenten-Sessions.
+# Quelle fuers Abendlese: die Transkripte deiner Agenten-Sessions.
 # Fuer Claude Code:
 TRANSCRIPTS="$HOME/.claude/projects"
 
@@ -28,7 +28,7 @@ GIT_AUTHOR="ich@example.org"
 AGENT="claude"
 
 # Log und Zeitlimit.
-LOG="$HOME/.local/state/zettelgarten/run.log"
+LOG="$HOME/.local/state/notizgarten/run.log"
 TIMEOUT_SECS=900
 
 # Benachrichtigung nach jedem Lauf: 1 an, 0 aus.

@@ -90,7 +90,7 @@ Formuliere Regeln nur an einer Stelle aus, sonst laufen die Fassungen auseinande
 
 Erklaere mir drei Laeufe und frage, welche ich will:
 
-1. **Abend-Destillat, taeglich** - liest die Transkripte meiner Agenten-Sessions des Tages und
+1. **Abendlese, taeglich** - liest die Transkripte meiner Agenten-Sessions des Tages und
    haelt fest, was dauerhaft nuetzlich ist. War nichts, wird nichts geschrieben.
 2. **Wochenreview, sonntags** - Bestandsaufnahme mit der Anti-Wiederholungs-Regel.
 3. **Gaertner, monatlich** - kaputte Links, verwaiste Notizen, veraltete Statusangaben.

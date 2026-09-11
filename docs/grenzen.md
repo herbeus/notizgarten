@@ -7,7 +7,7 @@ Stunden in Sackgassen laufen, die jemand vor dir schon abgeschritten hat.
 
 ## Chats aus der Web- und Mobile-App landen nicht automatisch im Vault
 
-Das Abend-Destillat liest **lokale** Transkripte - die Dateien, die ein Agent auf deinem Rechner
+Das Abendlese liest **lokale** Transkripte - die Dateien, die ein Agent auf deinem Rechner
 ablegt. Gespraeche, die du im Browser oder auf dem Handy fuehrst, liegen serverseitig und sind
 davon nicht erfasst.
 

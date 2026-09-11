@@ -1,12 +1,12 @@
-# Zettelgarten - Vault
+# Notizgarten - Vault
 
 Ein einsatzbereites Obsidian-Vault nach **PARA (Aktion) + Zettelkasten (Wissen) + MOCs (Navigation)**.
 
-Dieses Vault ist die Vorlage aus dem Setup-Repo `zettelgarten`. Die ausfuehrliche Anleitung
+Dieses Vault ist die Vorlage aus dem Setup-Repo `notizgarten`. Die ausfuehrliche Anleitung
 (Einrichtung auf macOS, Windows und iOS, Automatik, Sicherheit) steht dort in `docs/`.
 
 Wie du dein eigenes Vault nennst, ist dir ueberlassen - der Ordnername spielt nirgends eine
-Rolle. `zettelgarten` ist nur das Werkzeug, mit dem du es aufsetzt.
+Rolle. `notizgarten` ist nur das Werkzeug, mit dem du es aufsetzt.
 
 ## In 5 Minuten startklar
 

@@ -83,11 +83,11 @@ Abend schlaegt eine leere am Morgen.
 
 ## Die drei Laeufe
 
-### 1. Abend-Destillat (taeglich)
+### 1. Abendlese (taeglich)
 
 **Wann:** abends, wenn der Arbeitstag gelaufen ist.
 **Quelle:** die Transkripte der Agenten-Sessions des Tages.
-**Prompt:** [`prompts/abend-destillat.md`](../prompts/abend-destillat.md)
+**Prompt:** [`prompts/abendlese.md`](../prompts/abendlese.md)
 
 Liest, was heute besprochen wurde, und haelt fest, was dauerhaft nuetzlich ist - als neue
 Wissensnotiz, als Ergaenzung an einer bestehenden, oder als Tagesnotiz, die dann **gefuellt**

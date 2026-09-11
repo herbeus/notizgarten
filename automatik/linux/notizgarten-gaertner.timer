@@ -1,5 +1,5 @@
 [Unit]
-Description=Zettelgarten Gaertner (monatlich, 1. des Monats 10:00)
+Description=Notizgarten Gaertner (monatlich, 1. des Monats 10:00)
 
 [Timer]
 OnCalendar=*-*-01 10:00:00

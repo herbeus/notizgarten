@@ -45,7 +45,7 @@ Dateisystem und im Backup. Wer beim Sichten unbekannter Dateien `cat` benutzt, k
 Inhalt in das Transkript.
 
 Praktische Folge: unbekannte Dateien mit `grep -c` oder `grep -l` pruefen statt mit `cat`.
-Und: Das Abend-Destillat liest genau diese Transkripte. Deshalb steht in seinem Prompt
+Und: Das Abendlese liest genau diese Transkripte. Deshalb steht in seinem Prompt
 ausdruecklich, dass es keine Zugangsdaten uebernehmen darf.
 
 ## Sync und Backup

@@ -1,0 +1,6 @@
+[Unit]
+Description=Notizgarten: wochenreview
+
+[Service]
+Type=oneshot
+ExecStart=%h/notizgarten/automatik/runner.sh wochenreview

@@ -1,4 +1,4 @@
-# Abend-Destillat (taeglich)
+# Abendlese (taeglich)
 
 Wird vom Runner headless aufgerufen. Ersetze die `<< ... >>`-Platzhalter, bevor du ihn
 in `automatik/*/runner.sh` eintraegst.
