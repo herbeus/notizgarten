@@ -50,6 +50,65 @@ PROMPT_FILE="$PROMPT_DIR/$PROMPT_NAME"
 [ -f "$PROMPT_FILE" ] || { echo "FEHLER: Prompt fehlt: $PROMPT_FILE" >&2; exit 1; }
 
 mkdir -p "$(dirname "$LOG")"
+STATE_DIR="$(dirname "$LOG")"
+
+# ---------- Zeitraum: seit dem letzten ERFOLGREICHEN Lauf, nicht "heute" ----------
+# Zwei Faelle, die "heute" nicht abdeckt:
+#   - Der Rechner war zur Startzeit aus. systemd (Persistent=true) und launchd holen den Lauf am
+#     naechsten Morgen nach - der liest dann den falschen Tag, der verpasste Abend bleibt ungeerntet.
+#   - Ein Lauf scheitert (abgelaufene Anmeldung, kein Netz). Der naechste muss den Tag mitnehmen.
+# Deshalb merkt sich jeder Task den Zeitpunkt seines letzten Erfolgs und erntet ab dort.
+ago() { # ago <tage> -> "YYYY-MM-DD HH:MM:SS", GNU und BSD
+  date -d "$1 days ago" '+%F %T' 2>/dev/null || date -v-"$1"d '+%F %T'
+}
+LAST_FILE="$STATE_DIR/$TASK.last"
+case "$TASK" in
+  abendlese)    DEFAULT_DAYS=1 ;;
+  wochenreview) DEFAULT_DAYS=7 ;;
+  gaertner)     DEFAULT_DAYS=30 ;;
+esac
+if [ -s "$LAST_FILE" ]; then SINCE="$(cat "$LAST_FILE")"; else SINCE="$(ago "$DEFAULT_DAYS")"; fi
+# Beim Wochenreview zaehlt die Woche, nicht der letzte Lauf - sonst schrumpft ein verspaeteter
+# Review auf zwei Tage zusammen.
+[ "$TASK" = "wochenreview" ] && SINCE="$(ago 7)"
+NOW="$(date '+%F %T')"
+TODAY="$(date '+%F')"
+
+# ---------- Vorarbeit: was der Agent sonst mit Suchen verbrennt, liefert der Runner ----------
+# Deterministische Aufzaehlung statt Turn-fressender Exploration. Der Agent bekommt Listen und
+# urteilt; das Finden ist Skriptarbeit.
+TRANSCRIPT_LIST=""
+if [ -n "${TRANSCRIPTS:-}" ] && [ -d "${TRANSCRIPTS:-}" ]; then
+  TRANSCRIPT_LIST="$(find "$TRANSCRIPTS" -type f -name '*.jsonl' -newermt "$SINCE" 2>/dev/null | sort | head -200)"
+fi
+VAULT_CHANGED="$(find "$VAULT" -type f -name '*.md' -newermt "$SINCE" \
+  -not -path '*/.obsidian/*' -not -path '*/.trash/*' -not -path '*/.smart-env/*' 2>/dev/null \
+  | sed "s|^$VAULT/||" | sort | head -200)"
+GIT_LOG=""
+if [ -n "${REPOS:-}" ] && [ -d "${REPOS:-}" ] && [ -n "${GIT_AUTHOR:-}" ]; then
+  for g in "$REPOS"/*/.git "$REPOS"/*/*/.git; do
+    [ -d "$g" ] || continue
+    r="${g%/.git}"
+    # mehrere Autoren erlaubt (Leerzeichen/Komma getrennt): git ODER-verknuepft mehrere --author
+    AUTHOR_ARGS=(); for a in ${GIT_AUTHOR//,/ }; do AUTHOR_ARGS+=(--author="$a"); done
+    l="$(git -C "$r" log --all "${AUTHOR_ARGS[@]}" --since="$SINCE" --format='%ad  %s' --date=short 2>/dev/null | head -40)"
+    [ -n "$l" ] && GIT_LOG="$GIT_LOG
+[${r#$REPOS/}]
+$l"
+  done
+  GIT_LOG="$(printf '%s' "$GIT_LOG" | head -300)"
+fi
+[ -n "$TRANSCRIPT_LIST" ] || TRANSCRIPT_LIST="(keine Transkripte im Zeitraum)"
+[ -n "$VAULT_CHANGED" ]   || VAULT_CHANGED="(keine Aenderungen im Zeitraum)"
+[ -n "$GIT_LOG" ]         || GIT_LOG="(nicht konfiguriert oder keine Commits im Zeitraum)"
+
+# ---------- Turn-Budget je Lauf ----------
+# Der Review liest eine Woche und schreibt eine lange Datei - 40 Turns reichen dafuer nicht.
+case "$TASK" in
+  abendlese)    MAX_TURNS=40 ;;
+  wochenreview) MAX_TURNS=80 ;;
+  gaertner)     MAX_TURNS=60 ;;
+esac
 
 # ---------- Vorpruefung: darf ueberhaupt geschrieben werden? ----------
 # Deterministisch, und darum besser als jede Suche in der Ausgabe: Ein Lauf, der erst nach
@@ -90,6 +149,13 @@ BODY="${BODY//<< VAULT-PFAD >>/$VAULT}"
 BODY="${BODY//<< PFAD ZU DEN TRANSKRIPTEN >>/${TRANSCRIPTS:-}}"
 BODY="${BODY//<< PFAD ZU MEINEN REPOS >>/${REPOS:-}}"
 BODY="${BODY//<< MEINE MAILADRESSE >>/${GIT_AUTHOR:-}}"
+BODY="${BODY//<< SEIT >>/$SINCE}"
+BODY="${BODY//<< BIS >>/$NOW}"
+BODY="${BODY//<< HEUTE >>/$TODAY}"
+BODY="${BODY//<< TRANSKRIPT-LISTE >>/$TRANSCRIPT_LIST}"
+BODY="${BODY//<< VAULT-AENDERUNGEN >>/$VAULT_CHANGED}"
+BODY="${BODY//<< GIT-LOG >>/$GIT_LOG}"
+echo "zeitraum: $SINCE -> $NOW | transkripte: $(printf '%s\n' "$TRANSCRIPT_LIST" | grep -c '\.jsonl$') | max-turns: $MAX_TURNS" >>"$LOG"
 
 if printf '%s' "$BODY" | grep -q '<<'; then
   echo "WARN: ungefuellte Platzhalter im Prompt:" >>"$LOG"
@@ -124,11 +190,11 @@ RC=0
 OUT="$(
   if command -v timeout >/dev/null 2>&1; then
     printf '%s' "$BODY" | timeout --kill-after=30s "$TIMEOUT_SECS" \
-      "$AGENT" -p --permission-mode acceptEdits --max-turns 40 \
+      "$AGENT" -p --permission-mode acceptEdits --max-turns "$MAX_TURNS" \
       "${ADDDIRS[@]}" --allowedTools "$ALLOW" 2>&1
   else
     # macOS ohne coreutils: kein timeout. Dann eben ohne - der Agent hat --max-turns als Bremse.
-    printf '%s' "$BODY" | "$AGENT" -p --permission-mode acceptEdits --max-turns 40 \
+    printf '%s' "$BODY" | "$AGENT" -p --permission-mode acceptEdits --max-turns "$MAX_TURNS" \
       "${ADDDIRS[@]}" --allowedTools "$ALLOW" 2>&1
   fi
 )" || RC=$?
@@ -150,6 +216,26 @@ TOUCHED="$(find "$VAULT" -type f -newer "$STAMP" -not -path '*/.obsidian/*' -not
 if [ -z "$TOUCHED" ] && printf '%s' "$OUT" | grep -qE 'not granted|nicht freigegeben|Operation not permitted|EPERM'; then
   SUMMARY="RECHTEFEHLER: nichts geschrieben und Zugriff bemaengelt. Arbeitsbereich (--add-dir) und Festplattenvollzugriff pruefen. $SUMMARY"
   echo "WARN: Lauf ohne Schreibzugriff - siehe docs/setup-macos.md" >>"$LOG"
+fi
+
+# Zwei Fehlerbilder, die eine klare Ansage brauchen statt "rc=1":
+AUTH_FAIL=0
+case "$OUT" in
+  *"OAuth session expired"*|*"Failed to authenticate"*|*"Not logged in"*|*"Please run /login"*)
+    AUTH_FAIL=1
+    SUMMARY="ANMELDUNG ABGELAUFEN: im Terminal '$AGENT' starten und /login ausfuehren. Der Zeitraum bleibt offen und wird beim naechsten Lauf mitgeerntet. $SUMMARY"
+    ;;
+esac
+case "$OUT" in
+  *"Reached max turns"*)
+    SUMMARY="TURN-LIMIT ($MAX_TURNS) erreicht, vermutlich ohne Ergebnis. Zeitraum bleibt offen. $SUMMARY"
+    ;;
+esac
+
+# Stand-Marker nur nach echtem Erfolg vorruecken. Ein gescheiterter Lauf laesst den Zeitraum offen,
+# der naechste nimmt ihn mit - so geht kein Tag verloren, auch nicht bei abgelaufener Anmeldung.
+if [ "$RC" -eq 0 ] && [ "$AUTH_FAIL" -eq 0 ] && ! printf '%s' "$OUT" | grep -q 'Reached max turns'; then
+  printf '%s' "$NOW" > "$LAST_FILE"
 fi
 
 echo "$(date '+%F %T') [$TASK] fertig (rc=$RC)" >>"$LOG"

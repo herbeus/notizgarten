@@ -124,6 +124,48 @@ Timer und Runner-Skripte liegen in [`../automatik/`](../automatik/):
 
 Beide rufen denselben Runner auf, der den Agenten headless mit dem passenden Prompt startet.
 
+## Zeitraum statt "heute": der Stand-Marker
+
+Jeder Lauf merkt sich den Zeitpunkt seines letzten **Erfolgs** in
+`~/.local/state/notizgarten/<lauf>.last` und erntet beim naechsten Mal ab dort. Nicht "heute".
+Das klingt nach Detail, hat aber in der Praxis zwei Tage gerettet:
+
+- **Der Rechner war zur Startzeit aus.** systemd (`Persistent=true`) und launchd holen den Lauf am
+  naechsten Morgen nach. Ein Prompt, der "heute" sagt, liest dann den falschen Tag - der verpasste
+  Abend bleibt ungeerntet. So verschwand ein Tag mit vier Sessions, ohne dass etwas fehlschlug.
+- **Ein Lauf scheitert.** Abgelaufene Anmeldung, kein Netz, Turn-Limit. Der Marker rueckt dann
+  **nicht** vor; der naechste Lauf nimmt den Zeitraum mit.
+
+Der Prompt bekommt den Zeitraum ausdruecklich (`<< SEIT >>` bis `<< BIS >>`) und die Anweisung,
+Tagesnotizen mit dem **Datum des Ereignisses** anzulegen, nicht dem des Laufs. Ein Nachhol-Lauf
+am Morgen des 17. schreibt fuer den 16.
+
+Das Wochenreview ist die Ausnahme: dort zaehlt immer die Woche, nicht der letzte Lauf - sonst
+schrumpft ein verspaeteter Review auf zwei Tage.
+
+Marker zuruecksetzen, um bewusst weiter zurueck zu ernten:
+`printf '2026-09-15 20:00:00' > ~/.local/state/notizgarten/abendlese.last`
+
+## Der Runner sucht, der Agent urteilt
+
+Was deterministisch ist, macht das Skript - nicht das Modell. Der Runner uebergibt fertig:
+
+- die Liste der Transkripte im Zeitraum (`<< TRANSKRIPT-LISTE >>`)
+- die im Zeitraum geaenderten Vault-Dateien (`<< VAULT-AENDERUNGEN >>`)
+- den Git-Log der eigenen Commits (`<< GIT-LOG >>`), mehrere Autoren-Adressen erlaubt
+
+Vorher hat der Review diese Dinge selbst gesucht und dabei sein Turn-Budget aufgebraucht: 40 Turns,
+abgebrochen ohne Datei. Jetzt bekommt jeder Lauf ein eigenes Budget (Abendlese 40, Wochenreview 80,
+Gaertner 60) und verbrennt keins davon mit `find`.
+
+## Wenn die Anmeldung ablaeuft
+
+Die Anmeldung des Agenten laeuft irgendwann ab, und ein Hintergrundlauf kann sie nicht erneuern.
+Der Runner erkennt das (`OAuth session expired`, `Not logged in`) und meldet es als **eigenen
+Fall** - nicht als anonymes `rc=1`: *im Terminal den Agenten starten und `/login` ausfuehren*.
+Der Marker bleibt stehen, der Zeitraum wird beim naechsten Lauf mitgeerntet. Verloren geht nichts,
+solange die Anmeldung innerhalb weniger Tage erneuert wird.
+
 ## Nur eine Maschine bekommt den Timer
 
 Liegt das Vault in einem Cloud-Ordner, koennen mehrere Rechner es sehen - und mehrere

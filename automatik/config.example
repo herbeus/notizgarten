@@ -20,9 +20,11 @@ PROMPT_DIR="$HOME/notizgarten/prompts"
 # Fuer Claude Code:
 TRANSCRIPTS="$HOME/.claude/projects"
 
-# Optional fuers Wochenreview: wo deine Repos liegen und unter welcher Adresse du committest.
+# Optional fuers Wochenreview: wo deine Repos liegen und unter welchen Adressen du committest.
+# Mehrere Adressen mit Leerzeichen trennen - wer privat und dienstlich unterschiedlich committet,
+# braucht beide, sonst fehlt die halbe Woche.
 REPOS="$HOME/projects"
-GIT_AUTHOR="ich@example.org"
+GIT_AUTHOR="ich@example.org ich@firma.example"
 
 # CLI des Agenten.
 AGENT="claude"
