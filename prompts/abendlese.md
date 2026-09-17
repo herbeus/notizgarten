@@ -114,6 +114,12 @@ steht in seinen Zeitstempeln, nicht in seinem Aenderungsdatum.
 
 Existiert fuer einen Tag schon eine Tagesnotiz, ergaenze sie - lege keine zweite an.
 
+**Tag `beruf` an der Tagesnotiz, wenn der Tag ueberwiegend aus beruflichen Sessions besteht**
+(Ticketschluessel, Kundenprojekte, Kollegen). Das Tagebuch liegt ausserhalb von `08-Arbeit/`,
+und ohne das Tag ist berufliches Material dort spaeter unsichtbar - etwa wenn es bei Vertragsende
+geloescht werden muss. `tags: [tagebuch, beruf]`; bei gemischten Tagen ebenfalls, sobald ein
+beruflicher Anteil drin ist.
+
 **Wenn im ganzen Zeitraum nichts Nennenswertes war: lege keine Datei an.** Weder Tagesnotiz noch
 Wissensnotiz. Gib stattdessen eine Zeile aus: "nichts zu destillieren". Das ist ein
 vollstaendiger, erfolgreicher Lauf.
