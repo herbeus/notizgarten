@@ -29,8 +29,8 @@ Verbrenne keine Schritte mit `find` oder `ls`; lies gezielt, was du brauchst.
    ```
    << TRANSKRIPT-LISTE >>
    ```
-   Lies nur meine Eingaben und die Antworten, kein Werkzeug-Rauschen. Bei vielen Dateien:
-   ueberfliegen reicht, du suchst Themen und Entscheidungen, keine Details.
+   << TRANSKRIPT-HINWEIS >>
+   Bei vielen Dateien: ueberfliegen reicht, du suchst Themen und Entscheidungen, keine Details.
 4. **Git-Commits der Woche** (falls konfiguriert):
    ```
    << GIT-LOG >>

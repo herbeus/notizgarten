@@ -98,6 +98,27 @@ $l"
   done
   GIT_LOG="$(printf '%s' "$GIT_LOG" | head -300)"
 fi
+# Transkripte auf Nutztext eindampfen: rohes JSONL ist zu ~96 % Werkzeug-Rauschen. Ein Agent,
+# der das liest, verbraucht sein Turn-Budget vor dem ersten Gedanken. Der Extrakt enthaelt nur
+# Nutzer-Eingaben und Antworten im Zeitfenster, je Zeile mit Zeitstempel - damit kann er
+# Ereignisse dem richtigen Tag zuordnen.
+EXTRACT_DIR="$STATE_DIR/extract"
+rm -rf "$EXTRACT_DIR"; mkdir -p "$EXTRACT_DIR"
+EXTRACTOR="$(dirname "$0")/extract-transcript.py"
+if [ -n "$TRANSCRIPT_LIST" ] && command -v python3 >/dev/null 2>&1 && [ -f "$EXTRACTOR" ]; then
+  EXTRACT_LIST=""
+  while IFS= read -r t; do
+    [ -n "$t" ] || continue
+    name="$(basename "$(dirname "$t")")__$(basename "$t" .jsonl).txt"
+    line="$(python3 "$EXTRACTOR" "$t" "$EXTRACT_DIR/$name" "$SINCE" "$NOW" 2>/dev/null)"
+    [ -f "$EXTRACT_DIR/$name" ] && EXTRACT_LIST="$EXTRACT_LIST
+$EXTRACT_DIR/$name   ($line)"
+  done <<< "$TRANSCRIPT_LIST"
+  TRANSCRIPT_LIST="$(printf '%s' "$EXTRACT_LIST" | sed '/^$/d')"
+  TRANSCRIPT_NOTE="Die Dateien sind bereits auf Nutzer-Eingaben und Antworten reduziert und auf den Zeitraum gefiltert; jede Zeile traegt ihren Zeitstempel."
+else
+  TRANSCRIPT_NOTE="Rohe Transkripte (kein python3 fuer die Extraktion): lies nur Nutzer-Eingaben und Antworten."
+fi
 [ -n "$TRANSCRIPT_LIST" ] || TRANSCRIPT_LIST="(keine Transkripte im Zeitraum)"
 [ -n "$VAULT_CHANGED" ]   || VAULT_CHANGED="(keine Aenderungen im Zeitraum)"
 [ -n "$GIT_LOG" ]         || GIT_LOG="(nicht konfiguriert oder keine Commits im Zeitraum)"
@@ -153,9 +174,10 @@ BODY="${BODY//<< SEIT >>/$SINCE}"
 BODY="${BODY//<< BIS >>/$NOW}"
 BODY="${BODY//<< HEUTE >>/$TODAY}"
 BODY="${BODY//<< TRANSKRIPT-LISTE >>/$TRANSCRIPT_LIST}"
+BODY="${BODY//<< TRANSKRIPT-HINWEIS >>/$TRANSCRIPT_NOTE}"
 BODY="${BODY//<< VAULT-AENDERUNGEN >>/$VAULT_CHANGED}"
 BODY="${BODY//<< GIT-LOG >>/$GIT_LOG}"
-echo "zeitraum: $SINCE -> $NOW | transkripte: $(printf '%s\n' "$TRANSCRIPT_LIST" | grep -c '\.jsonl$') | max-turns: $MAX_TURNS" >>"$LOG"
+echo "zeitraum: $SINCE -> $NOW | transkripte: $(printf '%s\n' "$TRANSCRIPT_LIST" | grep -cE '\.(jsonl|txt)') | max-turns: $MAX_TURNS" >>"$LOG"
 
 if printf '%s' "$BODY" | grep -q '<<'; then
   echo "WARN: ungefuellte Platzhalter im Prompt:" >>"$LOG"
@@ -178,7 +200,7 @@ ALLOW="Read Glob Grep Edit($VAULT/**) Bash(ls:*) Bash(find:*) Bash(cat:*)"
 # ausserhalb (typisch: ein Cloud-Ordner unter /mnt/c oder ~/Library), bricht der Lauf nicht ab -
 # er liest, denkt nach und meldet am Ende "Schreibzugriff nicht freigegeben".
 # Deshalb jeden Ordner, den der Lauf braucht, explizit dazunehmen.
-ADDDIRS=(--add-dir "$VAULT")
+ADDDIRS=(--add-dir "$VAULT" --add-dir "$EXTRACT_DIR")
 [ -n "${TRANSCRIPTS:-}" ] && [ -d "${TRANSCRIPTS:-}" ] && ADDDIRS+=(--add-dir "$TRANSCRIPTS")
 [ -n "${REPOS:-}" ] && [ -d "${REPOS:-}" ] && ADDDIRS+=(--add-dir "$REPOS")
 # Der Prompt geht ueber stdin, NICHT als Argument. Zwei Gruende:
