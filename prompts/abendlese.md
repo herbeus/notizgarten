@@ -72,6 +72,9 @@ Fuer jede Erkenntnis, die die Probe besteht:
    sie nicht nach `08-Arbeit/`. Diese Grenze ist nicht kosmetisch - berufliche Inhalte koennen
    bei Vertragsende geloescht werden muessen, private nicht; ein falsch einsortierter Fund
    verschwindet dann mit.
+   **Der Rechner entscheidet nichts** - ein Dienstlaptop wird auch privat genutzt. Beruflich ist,
+   was mit dem Vertrag endet (Repos beim Arbeitgeber, Configs mit Firmenbezug); privat ist
+   uebertragbares Wissen (ein Fallstrick des Betriebssystems, ein Trick ohne Firmenbezug).
 3. Frontmatter nach der Konvention in `CLAUDE.md`.
 4. Dateiname: sprechender Titel **ohne `/`** - ein Schraegstrich erzeugt in Obsidian einen
    Unterordner.

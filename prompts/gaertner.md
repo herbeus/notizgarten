@@ -39,7 +39,10 @@ Du schreibst genau eine Datei: den Report.
       Spuren eines privaten Projekts - dann ist sie vermutlich privat und liegt im falschen Ast.
     - Eine Notiz ausserhalb von `08-Arbeit/` traegt das Tag `beruf`, oder eine in `08-Arbeit/`
       traegt es nicht.
-    - Eine MOC in `08-Arbeit/` kuratiert Notizen, die ausserhalb liegen.
+    - Eine MOC in `08-Arbeit/` kuratiert Notizen, die ausserhalb liegen. (Verweise auf
+      uebergeordnete MOCs sind Navigation, kein Befund.)
+    - Massstab bei Setup-Notizen eines gemischt genutzten Rechners: der Gegenstand, nicht das
+      Geraet - beruflich ist, was mit dem Vertrag endet; privat ist uebertragbares Wissen.
     Das ist kein Schoenheitsfehler: berufliche Inhalte koennen bei Vertragsende geloescht werden
     muessen. Ein privater Fund im falschen Ast verschwindet dann mit, ein beruflicher im privaten
     bleibt, wo er nicht bleiben darf. Nenne die Notiz, den Hinweis (Link, Tag, Spur) und den
