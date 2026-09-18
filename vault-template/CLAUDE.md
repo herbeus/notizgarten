@@ -61,6 +61,13 @@ nicht, was technisch aussieht. Eigene Open-Source-Projekte, dieses Setup, privat
 sind privat, auch wenn es um npm, Git oder CI geht. Faustregel: verlinkt eine Notiz auf ein
 Projekt in `01-Projekte/`, gehoert sie nicht nach `08-Arbeit/`.
 
+**Ein gemischt genutzter Rechner entscheidet nichts.** Wer den Dienstlaptop auch privat nutzt,
+kann nicht nach Geraet sortieren. Der Gegenstand der Notiz entscheidet: Beruflich ist, was mit
+dem Vertrag endet - Repos beim Arbeitgeber, Configs mit Firmenbezug, die konkrete Instanz eines
+Setups voller Firmenkonventionen. Privat ist uebertragbares Wissen - ein Fallstrick des
+Betriebssystems, ein Trick ohne Firmenbezug - und alles, was in einem eigenen Repo lebt.
+Im Zweifel: Wuerde ich das nach Vertragsende noch brauchen und duerfen?
+
 **Warum die Trennung `08-Arbeit` gegen den Rest?** Beruf und Privates haben verschiedene
 Halbwertszeiten, verschiedene Leser und im Zweifel verschiedene Eigentuemer. Ein Vertrag kann
 enden und verlangen, dass berufliche Inhalte verschwinden - dann muss klar sein, was das ist.
