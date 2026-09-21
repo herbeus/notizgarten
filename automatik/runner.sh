@@ -257,7 +257,7 @@ case "$OUT" in
 esac
 case "$OUT" in
   *"Reached max turns"*)
-    SUMMARY="TURN-LIMIT ($MAX_TURNS) erreicht, vermutlich ohne Ergebnis. Zeitraum bleibt offen. $SUMMARY"
+    SUMMARY="TURN-LIMIT ($MAX_TURNS) erreicht - Lauf vermutlich unvollstaendig, Geschriebenes bleibt. Zeitraum bleibt offen, der naechste Lauf setzt fort. $SUMMARY"
     ;;
 esac
 

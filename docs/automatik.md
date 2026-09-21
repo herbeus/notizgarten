@@ -158,6 +158,15 @@ Vorher hat der Review diese Dinge selbst gesucht und dabei sein Turn-Budget aufg
 abgebrochen ohne Datei. Jetzt bekommt jeder Lauf ein eigenes Budget (Abendlese 40, Wochenreview 80,
 Gaertner 60) und verbrennt keins davon mit `find`.
 
+## Abgebrochene Laeufe setzen sich fort
+
+Ein Lauf, der am Turn-Limit stirbt, hat bis dahin meist schon geschrieben. Das bleibt stehen.
+Weil der Marker nur nach Erfolg vorrueckt, sieht der naechste Lauf denselben Zeitraum - und weil
+Regel B gilt, legt er nichts doppelt an, sondern fuellt die Luecken. Beobachtet: ein Nachhol-Lauf
+ueber zwoelf Tage brach nach fuenf Tagesnotizen ab, der Folgelauf ergaenzte drei Notizen und war
+in fuenf Minuten fertig. Turn-Limit, stehender Marker und Regel B ergeben zusammen einen
+Wiederaufnahme-Mechanismus, den niemand entworfen hat.
+
 ## Wenn die Anmeldung ablaeuft
 
 Die Anmeldung des Agenten laeuft irgendwann ab, und ein Hintergrundlauf kann sie nicht erneuern.
