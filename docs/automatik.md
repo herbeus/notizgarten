@@ -146,6 +146,18 @@ schrumpft ein verspaeteter Review auf zwei Tage.
 Marker zuruecksetzen, um bewusst weiter zurueck zu ernten:
 `printf '2026-09-15 20:00:00' > ~/.local/state/notizgarten/abendlese.last`
 
+**Grosse Rueckstaende in Haeppchen.** Ein Fenster von Monaten passt in keinen Lauf, und wenn
+jeder Lauf am Limit stirbt, rueckt der Marker nie vor. Deshalb laesst sich das Fenster nach
+oben deckeln; der Marker landet bei Erfolg auf dieser Grenze:
+
+```bash
+NOTIZGARTEN_UNTIL="2026-06-01 00:00:00" ~/notizgarten/automatik/runner.sh abendlese   # Mai
+NOTIZGARTEN_UNTIL="2026-07-01 00:00:00" ~/notizgarten/automatik/runner.sh abendlese   # Juni
+```
+
+Monat fuer Monat, bis der Marker in der Gegenwart ist. Stirbt ein Haeppchen doch am Limit,
+denselben Befehl wiederholen - der Folgelauf fuellt nur die Luecken.
+
 ## Der Runner sucht, der Agent urteilt
 
 Was deterministisch ist, macht das Skript - nicht das Modell. Der Runner uebergibt fertig:

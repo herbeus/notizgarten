@@ -58,6 +58,9 @@ STATE_DIR="$(dirname "$LOG")"
 #     naechsten Morgen nach - der liest dann den falschen Tag, der verpasste Abend bleibt ungeerntet.
 #   - Ein Lauf scheitert (abgelaufene Anmeldung, kein Netz). Der naechste muss den Tag mitnehmen.
 # Deshalb merkt sich jeder Task den Zeitpunkt seines letzten Erfolgs und erntet ab dort.
+epoch() { # epoch "YYYY-MM-DD HH:MM:SS" -> Sekunden, GNU und BSD
+  date -d "$1" +%s 2>/dev/null || date -j -f '%Y-%m-%d %H:%M:%S' "$1" +%s 2>/dev/null || echo 0
+}
 ago() { # ago <tage> -> "YYYY-MM-DD HH:MM:SS", GNU und BSD
   date -d "$1 days ago" '+%F %T' 2>/dev/null || date -v-"$1"d '+%F %T'
 }
@@ -73,6 +76,15 @@ if [ -s "$LAST_FILE" ]; then SINCE="$(cat "$LAST_FILE")"; else SINCE="$(ago "$DE
 [ "$TASK" = "wochenreview" ] && SINCE="$(ago 7)"
 NOW="$(date '+%F %T')"
 TODAY="$(date '+%F')"
+# Fenster nach oben deckeln - fuer grosse Rueckstaende, die man monatsweise abarbeitet:
+#   NOTIZGARTEN_UNTIL="2026-06-01 00:00:00" runner.sh abendlese
+# Der Marker rueckt bei Erfolg auf UNTIL, nicht auf jetzt; der naechste Lauf setzt dort an.
+if [ -n "${NOTIZGARTEN_UNTIL:-}" ]; then
+  NOW="$NOTIZGARTEN_UNTIL"
+  if [ "$(epoch "$NOW")" -le "$(epoch "$SINCE")" ]; then
+    echo "FEHLER: NOTIZGARTEN_UNTIL ($NOW) liegt nicht nach dem Marker ($SINCE)" >&2; exit 1
+  fi
+fi
 
 # ---------- Vorarbeit: was der Agent sonst mit Suchen verbrennt, liefert der Runner ----------
 # Deterministische Aufzaehlung statt Turn-fressender Exploration. Der Agent bekommt Listen und
@@ -142,9 +154,6 @@ fi
 # Und ein Nachhol-Lauf ueber zwoelf Tage braucht mehr als einer ueber einen: jeder Tag mit
 # Substanz kostet Lese- und Schreibschritte. Ohne Skalierung scheitert genau der Lauf am Limit,
 # der den groessten Rueckstand aufholen soll.
-epoch() { # epoch "YYYY-MM-DD HH:MM:SS" -> Sekunden, GNU und BSD
-  date -d "$1" +%s 2>/dev/null || date -j -f '%Y-%m-%d %H:%M:%S' "$1" +%s 2>/dev/null || echo 0
-}
 DAYS=$(( ( $(epoch "$NOW") - $(epoch "$SINCE") + 86399 ) / 86400 )); [ "$DAYS" -lt 1 ] && DAYS=1
 case "$TASK" in
   abendlese)    MAX_TURNS=$(( 40 + 12 * (DAYS - 1) )); [ "$MAX_TURNS" -gt 150 ] && MAX_TURNS=150 ;;
