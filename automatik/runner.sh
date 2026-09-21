@@ -123,10 +123,17 @@ fi
 [ -n "$VAULT_CHANGED" ]   || VAULT_CHANGED="(keine Aenderungen im Zeitraum)"
 [ -n "$GIT_LOG" ]         || GIT_LOG="(nicht konfiguriert oder keine Commits im Zeitraum)"
 
-# ---------- Turn-Budget je Lauf ----------
+# ---------- Turn-Budget je Lauf, skaliert mit dem Zeitraum ----------
 # Der Review liest eine Woche und schreibt eine lange Datei - 40 Turns reichen dafuer nicht.
+# Und ein Nachhol-Lauf ueber zwoelf Tage braucht mehr als einer ueber einen: jeder Tag mit
+# Substanz kostet Lese- und Schreibschritte. Ohne Skalierung scheitert genau der Lauf am Limit,
+# der den groessten Rueckstand aufholen soll.
+epoch() { # epoch "YYYY-MM-DD HH:MM:SS" -> Sekunden, GNU und BSD
+  date -d "$1" +%s 2>/dev/null || date -j -f '%Y-%m-%d %H:%M:%S' "$1" +%s 2>/dev/null || echo 0
+}
+DAYS=$(( ( $(epoch "$NOW") - $(epoch "$SINCE") + 86399 ) / 86400 )); [ "$DAYS" -lt 1 ] && DAYS=1
 case "$TASK" in
-  abendlese)    MAX_TURNS=40 ;;
+  abendlese)    MAX_TURNS=$(( 40 + 12 * (DAYS - 1) )); [ "$MAX_TURNS" -gt 150 ] && MAX_TURNS=150 ;;
   wochenreview) MAX_TURNS=80 ;;
   gaertner)     MAX_TURNS=60 ;;
 esac
@@ -177,7 +184,7 @@ BODY="${BODY//<< TRANSKRIPT-LISTE >>/$TRANSCRIPT_LIST}"
 BODY="${BODY//<< TRANSKRIPT-HINWEIS >>/$TRANSCRIPT_NOTE}"
 BODY="${BODY//<< VAULT-AENDERUNGEN >>/$VAULT_CHANGED}"
 BODY="${BODY//<< GIT-LOG >>/$GIT_LOG}"
-echo "zeitraum: $SINCE -> $NOW | transkripte: $(printf '%s\n' "$TRANSCRIPT_LIST" | grep -cE '\.(jsonl|txt)') | max-turns: $MAX_TURNS" >>"$LOG"
+echo "zeitraum: $SINCE -> $NOW ($DAYS Tag(e)) | transkripte: $(printf '%s\n' "$TRANSCRIPT_LIST" | grep -cE '\.(jsonl|txt)') | max-turns: $MAX_TURNS" >>"$LOG"
 
 if printf '%s' "$BODY" | grep -q '<<'; then
   echo "WARN: ungefuellte Platzhalter im Prompt:" >>"$LOG"
