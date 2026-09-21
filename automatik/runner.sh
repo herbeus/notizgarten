@@ -77,9 +77,23 @@ TODAY="$(date '+%F')"
 # ---------- Vorarbeit: was der Agent sonst mit Suchen verbrennt, liefert der Runner ----------
 # Deterministische Aufzaehlung statt Turn-fressender Exploration. Der Agent bekommt Listen und
 # urteilt; das Finden ist Skriptarbeit.
+# TRANSCRIPTS darf mehrere Wurzeln enthalten, mit ":" getrennt (Pfade mit Leerzeichen sind
+# erlaubt, "Application Support" zum Beispiel). Grund: Claude Desktop im Cowork-Modus legt fuer
+# jede Session ein eigenes .claude/projects/ tief in seinem Support-Ordner an - dieselbe
+# JSONL-Form, aber ausserhalb von ~/.claude/projects. Wer dort arbeitet, hat sonst eine
+# blinde Quelle. Gesucht wird nur unter ".claude/projects/", nicht jedes *.jsonl - daneben
+# liegen audit.jsonl und Arbeitsprodukte.
 TRANSCRIPT_LIST=""
-if [ -n "${TRANSCRIPTS:-}" ] && [ -d "${TRANSCRIPTS:-}" ]; then
-  TRANSCRIPT_LIST="$(find "$TRANSCRIPTS" -type f -name '*.jsonl' -newermt "$SINCE" 2>/dev/null | sort | head -200)"
+if [ -n "${TRANSCRIPTS:-}" ]; then
+  OLDIFS="$IFS"; IFS=':'
+  for root in $TRANSCRIPTS; do
+    IFS="$OLDIFS"
+    [ -d "$root" ] || continue
+    TRANSCRIPT_LIST="$TRANSCRIPT_LIST
+$(find "$root" -type f -path '*/.claude/projects/*' -name '*.jsonl' -newermt "$SINCE" 2>/dev/null)"
+  done
+  IFS="$OLDIFS"
+  TRANSCRIPT_LIST="$(printf '%s' "$TRANSCRIPT_LIST" | sed '/^$/d' | sort | head -200)"
 fi
 VAULT_CHANGED="$(find "$VAULT" -type f -name '*.md' -newermt "$SINCE" \
   -not -path '*/.obsidian/*' -not -path '*/.trash/*' -not -path '*/.smart-env/*' 2>/dev/null \
@@ -208,7 +222,9 @@ ALLOW="Read Glob Grep Edit($VAULT/**) Bash(ls:*) Bash(find:*) Bash(cat:*)"
 # er liest, denkt nach und meldet am Ende "Schreibzugriff nicht freigegeben".
 # Deshalb jeden Ordner, den der Lauf braucht, explizit dazunehmen.
 ADDDIRS=(--add-dir "$VAULT" --add-dir "$EXTRACT_DIR")
-[ -n "${TRANSCRIPTS:-}" ] && [ -d "${TRANSCRIPTS:-}" ] && ADDDIRS+=(--add-dir "$TRANSCRIPTS")
+if [ -n "${TRANSCRIPTS:-}" ]; then
+  OLDIFS="$IFS"; IFS=':'; for root in $TRANSCRIPTS; do IFS="$OLDIFS"; [ -d "$root" ] && ADDDIRS+=(--add-dir "$root"); done; IFS="$OLDIFS"
+fi
 [ -n "${REPOS:-}" ] && [ -d "${REPOS:-}" ] && ADDDIRS+=(--add-dir "$REPOS")
 # Der Prompt geht ueber stdin, NICHT als Argument. Zwei Gruende:
 #   1. --allowedTools ist variadisch und verschluckt ein nachfolgendes Argument als weitere

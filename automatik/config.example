@@ -16,9 +16,13 @@ VAULT="$HOME/MeinVault"
 # Wo die Prompt-Dateien dieses Repos liegen.
 PROMPT_DIR="$HOME/notizgarten/prompts"
 
-# Quelle fuers Abendlese: die Transkripte deiner Agenten-Sessions.
-# Fuer Claude Code:
+# Quelle fuer die Abendlese: die Transkripte deiner Agenten-Sessions. Mehrere Wurzeln mit ":"
+# trennen. Claude Code schreibt nach ~/.claude/projects; Claude Desktop im Cowork-Modus legt pro
+# Session ein eigenes .claude/projects/ in seinem Support-Ordner an (macOS-Pfad unten) - ohne
+# diese zweite Wurzel bleibt alles, was du dort gearbeitet hast, ungeerntet.
 TRANSCRIPTS="$HOME/.claude/projects"
+# macOS mit Claude Desktop/Cowork:
+# TRANSCRIPTS="$HOME/.claude/projects:$HOME/Library/Application Support/Claude/local-agent-mode-sessions"
 
 # Optional fuers Wochenreview: wo deine Repos liegen und unter welchen Adressen du committest.
 # Mehrere Adressen mit Leerzeichen trennen - wer privat und dienstlich unterschiedlich committet,
