@@ -54,6 +54,18 @@ Vergleiche jeden offenen Punkt mit dem letzten Review:
   wir es?"* Ein Punkt, der dreimal ignoriert wurde, ist meistens keine Aufgabe, sondern eine
   Entscheidung, die aussteht.
 
+**Schweigen gilt als streichen.** Ein Punkt, der ueber der Dreier-Schwelle liegt und auf den
+auch nach der ausdruecklichen Frage keine Antwort kam, wird beim naechsten Review nicht ein
+weiteres Mal gefragt, sondern **still gestellt**:
+- Projekte und Zielnotizen: `status: pausiert`, mit einer datierten Zeile im Status-Log, die
+  die Regel nennt. Nichts wird geloescht oder verschoben; wieder aktiv setzen ist ein Handgriff.
+- Inbox-Notizen: Tag `offen` -> `bestand`, eine datierte Zeile - sie bleiben liegen, zaehlen
+  aber nicht mehr.
+- Danach faellt der Punkt aus der Zaehltabelle. Er taucht erst wieder auf, wenn sich etwas
+  bewegt.
+Ein Wort des Nutzers reicht als Veto oder Reaktivierung. Die Regel gilt seit dem 21.09.2026 -
+sie wurde vom Review vorgeschlagen und vom Nutzer bestaetigt.
+
 Hintergrund: In der Vorgaengerversion stand dieselbe Liste offener Punkte **wortgleich in vier
 aufeinanderfolgenden Reviews**, weil sich nichts bewegt hatte. Ab dem zweiten Mal liest das
 niemand mehr, ab dem dritten schadet es - es begraebt das Neue unter dem Alten.
@@ -84,6 +96,8 @@ jede einzelne Aufgabe.
 ### Was du nicht tust
 
 - Nichts loeschen, nichts verschieben, nichts archivieren. Vorschlagen ja, ausfuehren nein.
+  Einzige Ausnahme: `status: pausiert` und Tag `bestand` nach der Regel "Schweigen gilt als
+  streichen" - mit datierter Zeile, damit es nachvollziehbar bleibt.
 - Keine Zugangsdaten uebernehmen.
 - Keine Projekte oder Bereiche erfinden, die es nicht gibt.
 - Keinen Punkt aus dem letzten Review woertlich uebernehmen.
