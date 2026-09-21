@@ -72,6 +72,13 @@ wsl --shutdown
 naechsten Start nachgeholt wird - aber nur einer, nicht jeder ausgefallene Tag. Wer WSL nur
 sporadisch oeffnet, sollte den Lauf besser von Hand anstossen.
 
+**Die WSL-Uhr hinkt nach dem Aufwachen.** Nach einem Ruhezustand von Windows steht die Uhr der
+WSL-VM noch auf der Einschlafzeit und wird erst Sekunden spaeter nachgestellt. Ein nachgeholter
+Lauf, der genau in diesen Sekunden startet, berechnet seinen Zeitraum mit der alten Uhrzeit -
+beobachtet: Lauf um 07:19, Zeitraum endete "22:41 des Vortags". Folgen: keine, der Marker steht
+dann nur frueher als noetig und der naechste Lauf ueberlappt. Wer es sauber will: `sudo hwclock -s`
+in einer Startaufgabe, oder den Zeitraum im Wochenreview pruefen, wo es auffaellt.
+
 **Dateizugriff ueber `/mnt/c` ist langsam.** Fuer ein Vault mit einigen hundert Notizen ist das
 egal. Faellt es doch auf, hilft ein Lauf mit engerem Suchraum statt eines Umzugs.
 
